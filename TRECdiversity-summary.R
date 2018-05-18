@@ -20,53 +20,53 @@ plot_family_count <- function(families_table){
 }
 
 ### load data
-list <- read_csv("TREClist.csv")
-families <- read_csv("TRECfamilies.csv")
+list <- read_csv("data/TREClist.csv")
+families <- read_csv("data/TRECfamilies.csv")
 
 list <- select(list, Family, Genus, Species, SpeciesAcro1, MainCodeUSDA,
                CultivatedOnly, EstabdInFL, Native)
 
 ### All Families
 all_families <- family_count(list)
-write_csv(all_families, "TRECfamilies-all.csv")
+write_csv(all_families, "output/TRECfamilies-all.csv")
 
 top_families <- filter(all_families, !is.na(Family) & Count>1)
 top_families <- transform(top_families, Family = reorder(Family, -Count))
 plot_family_count(top_families)
-ggsave("TRECfamilies-all.png", width = 10, height = 4)
+ggsave("output/TRECfamilies-all.png", width = 10, height = 4)
 
 ### Native Families
 natives <- filter(list, Native == 1)
 native_families <- family_count(natives)
-write_csv(native_families, "TRECfamilies-native.csv")
+write_csv(native_families, "output/TRECfamilies-native.csv")
 
 top_natives <- filter(native_families, !is.na(Family) & Count>1)
 top_natives <- transform(top_natives, Family = reorder(Family, -Count))
 plot_family_count(top_natives)
-ggsave("TRECfamilies-native.png", width = 5, height = 4)
+ggsave("output/TRECfamilies-native.png", width = 5, height = 4)
 
 ### Non-native Established Families
 establishedNonNative <- filter(list, Native == 0 & EstabdInFL == 1)
 establishedNonNative_families <- family_count(establishedNonNative)
-write_csv(establishedNonNative_families, "TRECfamilies-establishedNonNative.csv")
+write_csv(establishedNonNative_families, "output/TRECfamilies-establishedNonNative.csv")
 
 top_establieshedNonNative <- filter(establishedNonNative_families, 
                                     !is.na(Family) & Count>1)
 top_establieshedNonNative <- transform(top_establieshedNonNative, 
                                        Family = reorder(Family, -Count))
 plot_family_count(top_establieshedNonNative)
-ggsave("TRECfamilies-establishedNonNative.png", width = 5, height = 4)
+ggsave("output/TRECfamilies-establishedNonNative.png", width = 5, height = 4)
 
 ### Non-Established Families
 nonEstablished <- filter(list, EstabdInFL == 0)
 nonEstablished_families <- family_count(nonEstablished)
-write_csv(nonEstablished_families, "TRECfamilies-nonEstablished.csv")
+write_csv(nonEstablished_families, "output/TRECfamilies-nonEstablished.csv")
 
 top_nonEstablished <- filter(nonEstablished_families, !is.na(Family) & Count>1)
 top_nonEstablished <- transform(top_nonEstablished, 
                                        Family = reorder(Family, -Count))
 plot_family_count(top_nonEstablished)
-ggsave("TRECfamilies-nonEstablished.png", width = 5, height = 4)
+ggsave("output/TRECfamilies-nonEstablished.png", width = 5, height = 4)
 
 
 families <- arrange(families, "Class", "Subclassa", "Superordera, b", "Orderc",
