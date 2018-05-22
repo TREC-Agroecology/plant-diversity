@@ -4,9 +4,13 @@
 library(tidyverse)
 library(agricolae)
 
+### Data
+
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
+
+### Scale Summaries
 
 ones <- surveys_w_plots %>%
   filter(small_plot == 1) %>%
@@ -19,8 +23,6 @@ tens <- surveys_w_plots %>%
   distinct(taxonID, taxonIDRemarks) %>%
   summarize(tens = n())
 
-record_counts <- right_join(ones, tens)
-
 big_plots <- surveys_w_plots %>%
   group_by(block, site, big_plot) %>%
   distinct(taxonID, taxonIDRemarks) %>%
@@ -28,6 +30,17 @@ big_plots <- surveys_w_plots %>%
 
 big_plots <- mutate(big_plots, site_stat = paste(block, site, sep=""))
 
+sites <- surveys %>%
+  group_by(block, site) %>%
+  distinct(taxonID, taxonIDRemarks) %>%
+  summarize(records = n())
+
+blocks <- surveys %>%
+  group_by(block) %>%
+  distinct(taxonID, taxonIDRemarks) %>%
+  summarize(records = n())
+
+record_counts <- right_join(ones, tens)
 record_counts <- inner_join(record_counts, big_plots)
 record_counts <- mutate(record_counts, site_stat = paste(block, site, sep=""))
 
