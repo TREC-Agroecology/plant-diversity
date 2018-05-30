@@ -93,7 +93,7 @@ ggplot(all_families_counts_fig, aes(x=Family, y=Count, fill=Class)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
         legend.position = c(0.8, 0.8)) +
   scale_fill_discrete(labels=c("Established Non-Natives", "Native", "Non-established"))
-#ggsave("output/TRECfamilies-allClass.png", width = 10, height = 4)
+#ggsave("output/TRECfamilies-allClass.png", width = 10, height = 10)
 
 
 
