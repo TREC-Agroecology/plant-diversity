@@ -89,11 +89,12 @@ all_families_counts_fig <- gather(all_families_counts_fig, key= "Class", value =
 ggplot(all_families_counts_fig, aes(x=Family, y=Count, fill=Class)) +
   geom_bar(stat="identity", width = 0.9) +
   ylab("Species Count") +
-  theme_classic(base_size=14, base_family = "Helvetica") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
+  scale_y_continuous(breaks=seq(0,60,5)) +
+  theme_classic(base_size=18, base_family = "Helvetica") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2, face = "italic"),
         legend.position = c(0.8, 0.8)) +
   scale_fill_discrete(labels=c("Established Non-Natives", "Native", "Non-established"))
-#ggsave("output/TRECfamilies-allClass.png", width = 10, height = 10)
+ggsave("output/TRECfamilies-allClass.png", width = 12, height = 10)
 
 
 
