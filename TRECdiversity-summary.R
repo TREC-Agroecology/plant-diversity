@@ -68,36 +68,39 @@ top_nonEstablished <- transform(top_nonEstablished,
 plot_family_count(top_nonEstablished)
 #ggsave("output/TRECfamilies-nonEstablished.png", width = 5, height = 4)
 
+### Unknown
+unknown <- filter(list, Native == "?" | EstabdInFL == "?")
+unknown_families <- family_count(unknown)
+
 ### Combined Table
 all_families_counts <- all_families %>%
   left_join(native_families, by = "Family", suffix = c("", "_native")) %>%
   left_join(establishedNonNative_families, by = "Family",
             suffix = c("", "_estabNonNat")) %>%
   left_join(nonEstablished_families, by = "Family", 
-            suffix = c("_all", "_nonEstab")) %>%
+            suffix = c("", "_nonEstab")) %>%
+  left_join(unknown_families, by = "Family", 
+            suffix = c("_all", "_unknown")) %>%
   filter(!is.na(Family)) %>%
   mutate_all(funs(replace(., is.na(.), 0))) %>%
-  mutate(Count_sum = Count_native + Count_estabNonNat + Count_nonEstab) %>%
+  mutate(Count_sum = Count_native + Count_estabNonNat + Count_nonEstab + Count_unknown) %>%
   filter(Count_sum>1)
 
 all_families_counts <- transform(all_families_counts, 
                                  Family = reorder(Family, -Count_sum))
 all_families_counts_fig <- select(all_families_counts, -Count_all, -Count_sum)
 all_families_counts_fig <- gather(all_families_counts_fig, key= "Class", value = "Count",
-                              c(Count_native, Count_estabNonNat, Count_nonEstab))
+                              c(Count_native, Count_estabNonNat, Count_nonEstab, Count_unknown))
+all_families_counts_fig$Class <- factor(all_families_counts_fig$Class,
+                                        levels = c("Count_unknown", "Count_nonEstab", "Count_estabNonNat", "Count_native"))
 
 ggplot(all_families_counts_fig, aes(x=Family, y=Count, fill=Class)) +
   geom_bar(stat="identity", width = 0.9) +
-  ylab("Species Count") +
+  labs(y = "Species Count", fill = "Local Establishment") +
   scale_y_continuous(breaks=seq(0,60,5)) +
+  scale_fill_manual(values=c("#D3D3D3", "#00BFC4", "#F8766D", "#7CAE00"),
+                    labels=c("Unknown", "Non-established", "Established Non-Natives", "Native")) +
   theme_classic(base_size=18, base_family = "Helvetica") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2, face = "italic"),
-        legend.position = c(0.8, 0.8)) +
-  scale_fill_discrete(labels=c("Established Non-Natives", "Native", "Non-established"))
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
+        legend.position = c(0.8, 0.8))
 ggsave("output/TRECfamilies-allClass.png", width = 12, height = 10)
-
-
-
-### Higher Taxa
-families <- arrange(families, "Class", "Subclassa", "Superordera, b", "Orderc",
-                     "Suborder", "Familyd")
