@@ -1,7 +1,8 @@
 ### Create 'Community data' table for vegan package from NEON sampling data
 
-library(tidyverse)
 library(vegan)
+library(tidyverse)
+
 
 build_community_data <- function(species, plots, survey){
   community_data <- matrix(nrow = nrow(plots), ncol = nrow(species))
@@ -22,7 +23,9 @@ build_community_data <- function(species, plots, survey){
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
-  mutate(genus_species = paste(taxonID, taxonIDRemarks, sep=".")) %>%
+  mutate(genus_species = paste(tolower(str_extract(taxonID, "....")),
+                               tolower(str_extract(taxonIDRemarks, "..")), 
+                               sep=".")) %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
 
 all_species <- surveys_w_plots %>%
@@ -45,6 +48,7 @@ plots_site <- distinct(surveys_w_plots, block, site)
 matrix_ten <- build_community_data(all_species, plots_tens, tens)
 diversity_ten <- diversity(matrix_ten)
 evenness_ten <- diversity_ten/log(specnumber(matrix_ten))
+#write.csv(matrix_ten, "data/matrix-ten.csv")
 
 matrix_hundred <- build_community_data(all_species, plots_hundreds, tens)
 diversity_hundred <- diversity(matrix_hundred)
@@ -55,8 +59,21 @@ diversity_site <- diversity(matrix_site)
 evenness_site <- diversity_site/log(specnumber(matrix_site))
 
 
-## Ordination tutorial
+## Non-metric Multidimensional Analysis [PCOA / metaMDS with cmdscale(), vegdist()]
 
+matrix_ten <- read.csv("data/matrix-ten.csv", row=1, header=TRUE)
+dist_plots <- vegdist(matrix_ten, "bray")
+nmds_plots <- metaMDS(dist_plots, k=4, trace=TRUE)
+#stressplot(nmds_plots)
+color_scheme <- c(rep(rainbow(8)[1], 8), rep(rainbow(8)[2], 8),
+                  rep(rainbow(8)[3], 8), rep(rainbow(8)[4], 8),
+                  rep(rainbow(8)[5], 8), rep(rainbow(8)[6], 8),
+                  rep(rainbow(8)[7], 8), rep(rainbow(8)[8], 8))
+                  
+# use scores() to extract info
+ordiplot(nmds_plots, display="sites",  cex=1.25)
+
+## Ordination tutorial
 model <- decorana(matrix_site)
 shnam <- make.cepnames(colnames(matrix_site))
 pl <- plot(model, dis="sp")

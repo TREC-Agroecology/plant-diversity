@@ -104,6 +104,9 @@ ones <- surveys_w_plots %>%
   group_by(block, site, big_plot, corner) %>%
   distinct(taxonID, taxonIDRemarks)
 
+## Variation across not within but between PERMANOVA (vegan:adonis)
+## Plot distribution of Jaccard scores (by plot and block)
+## betapart
 
 ## Jaccard Calculations
 
