@@ -48,7 +48,6 @@ plots_site <- distinct(surveys_w_plots, block, site)
 matrix_ten <- build_community_data(all_species, plots_tens, tens)
 diversity_ten <- diversity(matrix_ten)
 evenness_ten <- diversity_ten/log(specnumber(matrix_ten))
-#write.csv(matrix_ten, "data/matrix-ten.csv")
 
 matrix_hundred <- build_community_data(all_species, plots_hundreds, tens)
 diversity_hundred <- diversity(matrix_hundred)
@@ -61,17 +60,18 @@ evenness_site <- diversity_site/log(specnumber(matrix_site))
 
 ## Non-metric Multidimensional Analysis [PCOA / metaMDS with cmdscale(), vegdist()]
 
-matrix_ten <- read.csv("data/matrix-ten.csv", row=1, header=TRUE)
 dist_plots <- vegdist(matrix_ten, "bray")
-nmds_plots <- metaMDS(dist_plots, k=4, trace=TRUE)
+nmds_plots <- metaMDS(dist_plots, k=2, trace=TRUE)
 #stressplot(nmds_plots)
-color_scheme <- c(rep(rainbow(8)[1], 8), rep(rainbow(8)[2], 8),
-                  rep(rainbow(8)[3], 8), rep(rainbow(8)[4], 8),
-                  rep(rainbow(8)[5], 8), rep(rainbow(8)[6], 8),
-                  rep(rainbow(8)[7], 8), rep(rainbow(8)[8], 8))
-                  
-# use scores() to extract info
-ordiplot(nmds_plots, display="sites",  cex=1.25)
+#ordiplot(nmds_plots, display="sites", cex=1.25)
+
+nmds_plots_scores <- plots_tens %>%
+  bind_cols(NMDS1 = scores(nmds_plots)[,1], NMDS2 = scores(nmds_plots)[,2])
+
+ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
+  geom_point(cex=3) +
+  theme_bw()
+
 
 ## Ordination tutorial
 model <- decorana(matrix_site)
