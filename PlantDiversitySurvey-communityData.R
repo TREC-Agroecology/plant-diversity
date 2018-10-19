@@ -38,7 +38,8 @@ tens <- surveys_w_plots %>%
   group_by(block, site, big_plot, corner) %>%
   distinct(genus_species)
 
-plots_tens <- distinct(tens, big_plot, corner)
+plots_tens <- distinct(tens, big_plot, corner) %>%
+  mutate(site_code = paste(block, site, sep = ""))
 plots_hundreds <- distinct(surveys_w_plots, block, site, big_plot)
 plots_site <- distinct(surveys_w_plots, block, site)
 
@@ -60,6 +61,7 @@ evenness_site <- diversity_site/log(specnumber(matrix_site))
 
 ## Non-metric Multidimensional Analysis [PCOA / metaMDS with cmdscale(), vegdist()]
 
+matrix_ten <- read.csv("data/matrix-ten.csv", row =1, header =T) 
 dist_plots <- vegdist(matrix_ten, "bray")
 nmds_plots <- metaMDS(dist_plots, k=2, trace=TRUE)
 #stressplot(nmds_plots)
@@ -69,8 +71,14 @@ nmds_plots_scores <- plots_tens %>%
   bind_cols(NMDS1 = scores(nmds_plots)[,1], NMDS2 = scores(nmds_plots)[,2])
 
 ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
-  geom_point(cex=3) +
+  geom_point(cex=5) +
   theme_bw()
+
+perm_plots <- adonis(dist_plots ~ plots_tens$block + plots_tens$site_code, 
+                     permutations = 1000)
+hist(perm_plots$f.perms)
+anosim_plots <- anosim(dist_plots, plots_tens$block, permutations = 1000)
+
 
 
 ## Ordination tutorial
