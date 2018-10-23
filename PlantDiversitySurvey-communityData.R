@@ -58,6 +58,13 @@ matrix_site <- build_community_data(all_species, plots_site, tens)
 diversity_site <- diversity(matrix_site)
 evenness_site <- diversity_site/log(specnumber(matrix_site))
 
+## Plot Diversity and Evenness
+diversity_ten_tbl <- plots_tens %>%
+  bind_cols(diversity = diversity_ten)
+ggplot(tens, aes(x=tens, fill=as.factor(site))) +
+  geom_histogram(binwidth = 5) +
+  facet_grid(block~.) +
+  theme_bw()
 
 ## Non-metric Multidimensional Analysis [PCOA / metaMDS with cmdscale(), vegdist()]
 
@@ -72,24 +79,16 @@ nmds_plots_scores <- plots_tens %>%
 
 ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
   geom_point(cex=5) +
-  theme_bw()
+  labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
+  theme_bw(base_size=20, base_family="Helvetica")
+ggsave("output/nmds.png", width = 8, height = 6)
 
 perm_plots <- adonis(dist_plots ~ plots_tens$block + plots_tens$site_code, 
                      permutations = 1000)
 hist(perm_plots$f.perms)
 anosim_plots <- anosim(dist_plots, plots_tens$block, permutations = 1000)
 
+sink("output/permanova.txt")
+print(perm_plots)
+sink()
 
-
-## Ordination tutorial
-model <- decorana(matrix_site)
-shnam <- make.cepnames(colnames(matrix_site))
-pl <- plot(model, dis="sp")
-identify(pl, "sp", labels=shnam)
-
-stems <- colSums(matrix_site)
-plot(model, dis="sp", type="n")
-sel <- orditorp(model, dis="sp", lab=shnam, priority=stems, pcol = "gray", pch="+")
-
-plot(model, dis="sp", type="n")
-ordilabel(model, dis="sp", lab=shnam, priority = stems)
