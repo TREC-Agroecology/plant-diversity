@@ -11,6 +11,9 @@ library(agricolae)
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
+  mutate(genus_species = paste(tolower(str_extract(taxonID, "....")),
+                               tolower(str_extract(taxonIDRemarks, "..")), 
+                               sep=".")) %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
 
 
@@ -24,24 +27,24 @@ ones <- surveys_w_plots %>%
 tens <- surveys_w_plots %>%
   filter(!is.na(corner)) %>%
   group_by(block, site, big_plot, corner) %>%
-  distinct(taxonID, taxonIDRemarks) %>%
+  distinct(genus_species) %>%
   summarize(tens = n())
 
 big_plots <- surveys_w_plots %>%  ## Big_plots = 100m
   group_by(block, site, big_plot) %>%
-  distinct(taxonID, taxonIDRemarks) %>%
+  distinct(genus_species) %>%
   summarize(hundreds = n())
 
 big_plots <- mutate(big_plots, site_stat = paste(block, site, sep=""))
 
 sites <- surveys %>%
   group_by(block, site) %>%
-  distinct(taxonID, taxonIDRemarks) %>%
+  distinct(genus_species) %>%
   summarize(records = n())
 
 blocks <- surveys %>%
   group_by(block) %>%
-  distinct(taxonID, taxonIDRemarks) %>%
+  distinct(genus_species) %>%
   summarize(records = n())
 
 
@@ -52,7 +55,14 @@ record_counts <- inner_join(record_counts, big_plots)
 record_counts <- mutate(record_counts, site_stat = paste(block, site, sep=""))
 
 
-## Calculate and visualize average richness among scales
+## Calculate and visualize richness among scales
+
+ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
+  geom_histogram(binwidth = 5) +
+  facet_grid(block~.) +
+  labs(x="Richness", y="Count", fill="Site") +
+  theme_bw(base_size=14, base_family="Helvetica")
+ggsave("output/richness_ten.png", width = 5, height = 12)  
 
 site_avg <- record_counts %>%
   group_by(block, site) %>%
@@ -70,28 +80,37 @@ site_avg_plot <- mutate(site_avg_plot, site_stat = paste(block, site, sep=""))
 
 ggplot(site_avg_plot, aes(x=scale, y=average, group=site_stat)) +
   geom_line() +
-  geom_point(size=3, aes(color=site_stat)) +
-  labs(x="Scale [m2]", y="Average Record Count", color="Site") +
-  theme_classic()
-  
+  geom_point(size=3, aes(shape=site, color=as.factor(block))) +
+  labs(x="Scale [m2]", y="Average Richness", shape="Site", color="Block") +
+  theme_classic(base_size=20, base_family="Helvetica")
+ggsave("output/avg_richness.png", width = 5, height = 4)  
 
-## ANOVA
+## ANOVA and Tukey Post Hoc
+
+sink("output/richness.txt")
 
 hundreds_aov <- aov(hundreds ~ block + site_stat, data=big_plots)
-summary(hundreds_aov)
+cat("hundreds ~ block + site_stat\n") 
+print(summary(hundreds_aov))
+cat("\nblock\n")
+HSD.test(hundreds_aov, "block")$groups
+cat("\nsite\n")
+HSD.test(hundreds_aov, "site_stat")$groups
 
 tens_aov <- aov(tens ~ block + site_stat, data=record_counts)
-summary(tens_aov)
+cat("\ntens ~ block + site_stat\n") 
+print(summary(tens_aov))
+cat("\nblock\n")
+HSD.test(tens_aov, "block")$groups
+cat("\nsite\n")
+HSD.test(tens_aov, "site_stat")$groups
 
 ones_aov <- aov(ones ~ block + site_stat, data=record_counts)
+cat("\nones ~ block + site_stat\n") 
 summary(ones_aov)
-
-
-## Tukey Post Hoc
-
-HSD.test(hundreds_aov, "block")$groups
-HSD.test(tens_aov, "block")$groups
+cat("\nblock\n")
 HSD.test(ones_aov, "block")$groups
-HSD.test(hundreds_aov, "site_stat")$groups
-HSD.test(tens_aov, "site_stat")$groups
+cat("\nsite\n")
 HSD.test(ones_aov, "site_stat")$groups
+
+sink()
