@@ -37,12 +37,12 @@ big_plots <- surveys_w_plots %>%  ## Big_plots = 100m
 
 big_plots <- mutate(big_plots, site_stat = paste(block, site, sep=""))
 
-sites <- surveys %>%
+sites <- surveys_w_plots %>%
   group_by(block, site) %>%
   distinct(genus_species) %>%
   summarize(records = n())
 
-blocks <- surveys %>%
+blocks <- surveys_w_plots %>%
   group_by(block) %>%
   distinct(genus_species) %>%
   summarize(records = n())
@@ -59,10 +59,10 @@ record_counts <- mutate(record_counts, site_stat = paste(block, site, sep=""))
 
 ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
   geom_histogram(binwidth = 5) +
-  facet_grid(block~.) +
+  facet_grid(.~block) +
   labs(x="Richness", y="Count", fill="Site") +
   theme_bw(base_size=14, base_family="Helvetica")
-ggsave("output/richness_ten.png", width = 5, height = 12)  
+ggsave("output/richness_ten.png", width = 12, height = 5)  
 
 site_avg <- record_counts %>%
   group_by(block, site) %>%
