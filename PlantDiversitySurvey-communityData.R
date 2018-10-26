@@ -38,8 +38,10 @@ tens <- surveys_w_plots %>%
   group_by(block, site, big_plot, corner) %>%
   distinct(genus_species)
 
+status <- data.frame(block = c(1,4,14,15), status = c("old", "old", "new", "new"))
 plots_tens <- distinct(tens, big_plot, corner) %>%
-  mutate(site_code = paste(block, site, sep = ""))
+  mutate(site_code = paste(block, site, sep = "")) %>%
+  left_join(status, by = c("block"))
 plots_hundreds <- distinct(surveys_w_plots, block, site, big_plot)
 plots_site <- distinct(surveys_w_plots, block, site)
 
@@ -70,6 +72,7 @@ ggplot(tens, aes(x=tens, fill=as.factor(site))) +
 
 matrix_ten <- read.csv("data/matrix-ten.csv", row =1, header =T) 
 dist_plots <- vegdist(matrix_ten, "bray")
+dist_plots_j <- vegdist(matrix_ten, "jaccard")
 nmds_plots <- metaMDS(dist_plots, k=2, trace=TRUE)
 #stressplot(nmds_plots)
 #ordiplot(nmds_plots, display="sites", cex=1.25)
@@ -83,8 +86,8 @@ ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(bloc
   theme_bw(base_size=20, base_family="Helvetica")
 ggsave("output/nmds.png", width = 8, height = 6)
 
-perm_plots <- adonis(dist_plots ~ plots_tens$block + plots_tens$site_code, 
-                     permutations = 1000)
+perm_plots <- adonis(dist_plots ~ plots_tens$status + plots_tens$block +
+                     plots_tens$site_code, permutations = 1000)
 hist(perm_plots$f.perms)
 anosim_plots <- anosim(dist_plots, plots_tens$block, permutations = 1000)
 
