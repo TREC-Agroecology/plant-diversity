@@ -61,7 +61,7 @@ ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
   geom_histogram(binwidth = 5) +
   facet_grid(.~block) +
   labs(x="Richness", y="Count", fill="Site") +
-  theme_bw(base_size=14, base_family="Helvetica")
+  theme_bw(base_size=24, base_family="Helvetica")
 ggsave("output/richness_ten.png", width = 12, height = 5)  
 
 site_avg <- record_counts %>%
