@@ -102,5 +102,6 @@ ggplot(all_families_counts_fig, aes(x=Family, y=Count, fill=Class)) +
                     labels=c("Unknown", "Non-established", "Established Non-Natives", "Native")) +
   theme_classic(base_size=18, base_family = "Helvetica") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.2),
-        legend.position = c(0.8, 0.8))
+        axis.title=element_text(size=24), legend.text = element_text(size=20),
+        legend.title = element_text(size=24), legend.position = c(0.8, 0.8))
 ggsave("output/TRECfamilies-allClass.png", width = 12, height = 10)
