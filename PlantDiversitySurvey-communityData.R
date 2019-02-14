@@ -23,13 +23,13 @@ build_community_data <- function(species, plots, survey){
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
-  mutate(genus_species = paste(tolower(str_extract(taxonID, "....")),
-                               tolower(str_extract(taxonIDRemarks, "..")), 
+  mutate(genus_species = paste(tolower(str_extract(genus, "....")),
+                               tolower(str_extract(species, "...")), 
                                sep=".")) %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
 
 all_species <- surveys_w_plots %>%
-  filter(!is.na(taxonIDRemarks)) %>%
+  filter(!is.na(genus)) %>%
   distinct(genus_species) %>%
   arrange(genus_species)
   
@@ -63,14 +63,14 @@ evenness_site <- diversity_site/log(specnumber(matrix_site))
 ## Plot Diversity and Evenness
 diversity_ten_tbl <- plots_tens %>%
   bind_cols(diversity = diversity_ten)
-ggplot(tens, aes(x=tens, fill=as.factor(site))) +
-  geom_histogram(binwidth = 5) +
+ggplot(diversity_ten_tbl, aes(x=diversity, fill=site)) +
+  geom_histogram(binwidth = 0.25) +
   facet_grid(block~.) +
   theme_bw()
 
 ## Non-metric Multidimensional Analysis [PCOA / metaMDS with cmdscale(), vegdist()]
 
-matrix_ten <- read.csv("data/matrix-ten.csv", row =1, header =T) 
+#matrix_ten <- read.csv("data/matrix-ten.csv", row =1, header =T) 
 dist_plots <- vegdist(matrix_ten, "bray")
 dist_plots_j <- vegdist(matrix_ten, "jaccard")
 nmds_plots <- metaMDS(dist_plots, k=2, trace=TRUE)
