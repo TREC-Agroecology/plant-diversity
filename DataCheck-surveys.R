@@ -16,3 +16,11 @@ surveys_check$code <- str_replace(surveys_check$code, "41.100", "41")
 
 check <- anti_join(surveys_check, surveys)
 check_back <- anti_join(surveys, surveys_check)
+
+genus_check <- distinct(surveys, genus) %>%
+  arrange(genus)
+
+species_check <- distinct(surveys, genus, species) %>%
+  arrange(genus, species)
+
+write.csv(species_check, "output/PlantDiversitySampling-SpeciesList.csv")
