@@ -11,11 +11,11 @@ library(agricolae)
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
-  mutate(genus_species = paste(tolower(str_extract(taxonID, "....")),
-                               tolower(str_extract(taxonIDRemarks, "..")), 
+  mutate(genus_species = paste(tolower(str_extract(genus, "....")),
+                               tolower(str_extract(species, "..")), 
                                sep=".")) %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
-
+     # Expect missing pieces for 100m2 plots
 
 ## Scale Summaries
 
