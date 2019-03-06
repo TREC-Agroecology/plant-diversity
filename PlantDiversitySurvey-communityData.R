@@ -39,13 +39,24 @@ tens <- surveys_w_plots %>%
   group_by(block, site, big_plot, corner) %>%
   distinct(genus_species)
 
+hundreds <- surveys_w_plots %>%
+  filter(!is.na(genus)) %>%
+  group_by(block, site, big_plot) %>%
+  distinct(genus_species)
+
 status <- data.frame(block = c(1,4,14,15), status = c("old", "old", "new", "new"))
+cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15),
+                      site = rep(c("N", "S"), 4),
+                      cluster = c("open", "open", "open", "lawn",
+                                  "lawn", "hammock", "orchard", "orchard"))
 plots_tens <- distinct(tens, big_plot, corner) %>%
   mutate(site_code = paste(block, site, sep = "")) %>%
-  left_join(status, by = c("block"))
+  left_join(status, by = c("block")) %>%
+  left_join(cluster, by = c("block", "site"))
 plots_hundreds <- distinct(surveys_w_plots, block, site, big_plot) %>%
   mutate(site_code = paste(block, site, sep = "")) %>%
-  left_join(status, by = c("block"))
+  left_join(status, by = c("block")) %>%
+  left_join(cluster, by = c("block", "site"))
 plots_site <- distinct(surveys_w_plots, block, site)
 
 
@@ -55,7 +66,7 @@ matrix_ten <- build_community_data(all_species, plots_tens, tens)
 diversity_ten <- diversity(matrix_ten)
 evenness_ten <- diversity_ten/log(specnumber(matrix_ten))
 
-matrix_hundred <- build_community_data(all_species, plots_hundreds, tens)
+matrix_hundred <- build_community_data(all_species, plots_hundreds, hundreds)
 diversity_hundred <- diversity(matrix_hundred)
 evenness_hundred <- diversity_hundred/log(specnumber(matrix_hundred))
 
@@ -151,10 +162,30 @@ ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(bloc
   theme_bw(base_size=20, base_family="Helvetica")
 ggsave("output/nmds-100.png", width = 8, height = 6)
 
-perm_plots <- adonis(dist_plots ~ plots_hundreds$status + plots_hundreds$block +
-                       plots_hundreds$site_code, permutations = 1000)
+perm_plots <- adonis(dist_plots ~ plots_hundreds$status + plots_hundreds$cluster +
+                       plots_hundreds$block + plots_hundreds$site_code, permutations = 1000)
 
 
 sink("output/permanova-100.txt")
 print(perm_plots)
 sink()
+
+rm(species_rank)
+for (c in unique(plots_hundreds$cluster)){
+  blocks <- filter(plots_hundreds, cluster == c)
+  cluster_matrix <- build_community_data(all_species, blocks, hundreds)
+  matrix_sum <- sort(colSums(cluster_matrix), decreasing = TRUE)
+  if (exists("species_rank")){
+    species_rank <- full_join(species_rank,
+                              data.frame(genus_species = names(matrix_sum[matrix_sum>0]),
+                                         rank = matrix_sum[matrix_sum>0]),
+                              by = "genus_species")
+  } else {
+    species_rank <- left_join(all_species, 
+                              data.frame(genus_species = names(matrix_sum[matrix_sum>0]),
+                                         rank = matrix_sum[matrix_sum>0]),
+                              by = "genus_species")
+  }
+}
+names(species_rank) <- c("species_code", 
+                         as.character(unique(clusters_100$cluster)))
