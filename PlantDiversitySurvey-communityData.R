@@ -30,7 +30,7 @@ surveys_w_plots <- surveys %>%
 
 all_species <- surveys_w_plots %>%
   filter(!is.na(genus)) %>%
-  distinct(genus_species) %>%
+  distinct(genus_species, genus, species) %>%
   arrange(genus_species)
   
 tens <- surveys_w_plots %>%
@@ -86,34 +86,115 @@ ggplot(diversity_ten_tbl, aes(x=diversity, fill=site)) +
 
 ### Tens
 
-#matrix_ten <- read.csv("data/matrix-ten.csv", row =1, header =T) 
-dist_plots <- vegdist(matrix_ten, "bray")
-#dist_plots_j <- vegdist(matrix_ten, "jaccard")
-nmds_plots <- metaMDS(dist_plots, k=2, try=100, trace=TRUE)
-#stressplot(nmds_plots)
-#ordiplot(nmds_plots, display="sites", cex=1.25)
+dist_plots_10 <- vegdist(matrix_ten, "bray")
+nmds_plots_10 <- metaMDS(dist_plots_10, k=2, try=100, trace=TRUE)
 
-nmds_plots_scores <- plots_tens %>%
-  bind_cols(NMDS1 = scores(nmds_plots)[,1], NMDS2 = scores(nmds_plots)[,2])
+nmds_plots_scores_10 <- plots_tens %>%
+  bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2])
 
-ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block),
-                            label = paste(big_plot,corner))) +
+ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
+                            #label = paste(big_plot,corner))) +
   geom_point(cex=5) +
-  geom_text(color="black")+
+  #geom_text(color="black") +
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
   theme_bw(base_size=20, base_family="Helvetica")
-ggsave("output/nmds.png", width = 8, height = 6)
+ggsave("output/nmds-10.png", width = 8, height = 6)
 
-perm_plots <- adonis(dist_plots ~ plots_tens$status + plots_tens$block +
-                     plots_tens$site_code, permutations = 1000)
-hist(perm_plots$f.perms)
-anosim_plots <- anosim(dist_plots, plots_tens$block, permutations = 1000)
+perm_plots_10 <- adonis(dist_plots_10 ~ plots_tens$status + plots_tens$cluster +
+                     plots_tens$block + plots_tens$site_code, permutations = 1000)
 
-sink("output/permanova.txt")
-print(perm_plots)
+sink("output/permanova-10.txt")
+print(perm_plots_10)
 sink()
 
-### Tens Subset
+
+### Hundreds
+
+dist_plots_100 <- vegdist(matrix_hundred, "bray")
+nmds_plots_100 <- metaMDS(dist_plots_100, k=2, try=100, trace=TRUE)
+
+nmds_plots_scores_100 <- plots_hundreds %>%
+  bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2])
+
+ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
+                              #label = big_plot)) +
+  geom_point(cex=5) +
+  #geom_text(color="black") +
+  labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
+  theme_bw(base_size=20, base_family="Helvetica")
+ggsave("output/nmds-100.png", width = 8, height = 6)
+
+perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster +
+                       plots_hundreds$block + plots_hundreds$site_code, permutations = 1000)
+
+sink("output/permanova-100.txt")
+print(perm_plots_100)
+sink()
+
+### Hundreds Rank
+rm(species_rank)
+names_list <- c("genus_species")
+for (c in unique(plots_hundreds$cluster)){
+  names_list <- c(names_list, c(paste("count", c, sep="_"), paste("rank", c, sep="_")))
+  blocks <- filter(plots_hundreds, cluster == c)
+  cluster_matrix <- build_community_data(all_species, blocks, hundreds)
+  matrix_sum <- sort(colSums(cluster_matrix), decreasing = TRUE)
+  if (exists("species_rank")){
+    species_rank <- full_join(species_rank,
+                              data.frame(genus_species = names(matrix_sum[matrix_sum>0]),
+                                         count = matrix_sum[matrix_sum>0],
+                                         rank = rank(-matrix_sum[matrix_sum>0], ties.method="min")),
+                              by = "genus_species")
+  } else {
+    species_rank <- left_join(all_species, 
+                              data.frame(genus_species = names(matrix_sum[matrix_sum>0]),
+                                         count = matrix_sum[matrix_sum>0],
+                                         rank = rank(-matrix_sum[matrix_sum>0], ties.method="min")),
+                              by = "genus_species")
+  }
+}
+names(species_rank) <- c(names_list)
+
+rank_table <- species_rank %>%
+  select(genus_species, starts_with("rank_"))
+
+sink("output/top-species.txt")
+
+top_open <- rank_table %>%
+  filter(rank_open <= 3) %>%
+  arrange(rank_open) %>%
+  left_join(all_species) %>%
+  select(genus, species, everything(), -rank_open, -genus_species)
+
+cat("Open\n")
+as.data.frame(top_open)
+
+top_lawn <- rank_table %>%
+  filter(rank_lawn == 1) %>%
+  left_join(all_species) %>%
+  select(genus, species, everything(), -rank_lawn, -genus_species)
+
+cat("\nLawn\n")
+as.data.frame(top_lawn)
+
+top_orchard <- rank_table %>%
+  filter(rank_orchard == 1) %>%
+  left_join(all_species) %>%
+  select(genus, species, everything(), -rank_orchard, -genus_species)
+
+cat("\nOrchard\n")
+as.data.frame(top_orchard)
+
+top_hammock <- rank_table %>%
+  filter(rank_hammock == 1) %>%
+  left_join(all_species) %>%
+  select(genus, species, everything(), -rank_hammock, -genus_species)
+
+cat("\nHammock\n")
+as.data.frame(top_hammock)
+sink()
+
+### EXTRA Tens Subset
 
 species_rank <- tens %>%
   group_by(genus_species) %>%
@@ -136,7 +217,6 @@ ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(bloc
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
   theme_bw(base_size=20, base_family="Helvetica")
 
-
 perm_plots <- adonis(dist_plots ~ plots_tens$status + plots_tens$block +
                        plots_tens$site_code, permutations = 1000)
 hist(perm_plots$f.perms)
@@ -145,47 +225,4 @@ anosim_plots <- anosim(dist_plots, plots_tens$block, permutations = 1000)
 sink("output/permanova-10s.txt")
 print(perm_plots)
 sink()
-
-### Hundreds
-
-dist_plots <- vegdist(matrix_hundred, "bray")
-nmds_plots <- metaMDS(dist_plots, k=2, try=100, trace=TRUE)
-
-nmds_plots_scores <- plots_hundreds %>%
-  bind_cols(NMDS1 = scores(nmds_plots)[,1], NMDS2 = scores(nmds_plots)[,2])
-
-ggplot(nmds_plots_scores, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block),
-                              label = big_plot)) +
-  geom_point(cex=5) +
-  geom_text(color="black")+
-  labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
-  theme_bw(base_size=20, base_family="Helvetica")
-ggsave("output/nmds-100.png", width = 8, height = 6)
-
-perm_plots <- adonis(dist_plots ~ plots_hundreds$status + plots_hundreds$cluster +
-                       plots_hundreds$block + plots_hundreds$site_code, permutations = 1000)
-
-
-sink("output/permanova-100.txt")
-print(perm_plots)
-sink()
-
-rm(species_rank)
-for (c in unique(plots_hundreds$cluster)){
-  blocks <- filter(plots_hundreds, cluster == c)
-  cluster_matrix <- build_community_data(all_species, blocks, hundreds)
-  matrix_sum <- sort(colSums(cluster_matrix), decreasing = TRUE)
-  if (exists("species_rank")){
-    species_rank <- full_join(species_rank,
-                              data.frame(genus_species = names(matrix_sum[matrix_sum>0]),
-                                         rank = matrix_sum[matrix_sum>0]),
-                              by = "genus_species")
-  } else {
-    species_rank <- left_join(all_species, 
-                              data.frame(genus_species = names(matrix_sum[matrix_sum>0]),
-                                         rank = matrix_sum[matrix_sum>0]),
-                              by = "genus_species")
-  }
-}
-names(species_rank) <- c("species_code", 
-                         as.character(unique(clusters_100$cluster)))
+  
