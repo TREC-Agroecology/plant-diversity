@@ -20,13 +20,47 @@ plot_family_count <- function(families_table){
 }
 
 ### load data
-list <- read_csv("data/TREClist.csv")
+list <- read_csv("data/TREClist.csv") %>%
+  separate(Genus, c("Genus"), " \\[",  extra = "drop") %>%  # Removes synonyms
+  separate(Species, c("Species"), " \\[",  extra = "drop")
 families <- read_csv("data/TRECfamilies.csv")
 
-list <- select(list, Family, Genus, Species, SpeciesAcro1, MainCodeUSDA,
-               CultivatedOnly, EstabdInFL, Native)
+### Add UF/IFAS Assessment
+assessment <- read_csv("data/AssessmentList.csv") %>%
+  separate(Title, c("Genus", "Species"), " ", extra = "merge")
+assessment_alt <- assessment %>%
+  filter(!is.na(Synonyms))
+
+synonym_list <- data.frame(Name = c(), Assessment = c())
+for (i in 1:nrow(assessment_alt)){
+  synonyms <- str_split(assessment_alt$Synonyms[i], ", ")[[1]]
+  for (synonym in synonyms){
+    synonym_entry <- data.frame(Name = c(synonym), 
+                                Assessment = c(assessment_alt$South[i]))
+    synonym_list <- rbind(synonym_list, synonym_entry)
+  }
+}
+
+synonym_list <- synonym_list %>%
+  separate(Name, c("Genus", "Species"), " ", extra = "merge")
+
+assessment_list <- assessment %>%
+  select(Genus, Species, Assessment = South) %>%
+  rbind(synonym_list) %>%
+  distinct(Genus, Species, .keep_all=TRUE)
+
+list_with_assessment <- left_join(list, assessment_list)
+#write_csv(list_with_assessment, "data/TREClist.csv")
+
+assessment_invasive <- list_with_assessment %>%
+  filter(Assessment %in% c("Invasive", "High Invasion Risk", "Invasive (No Uses)", "Prohibited")) %>%
+  select(Genus, Species, Assessment)
+#write_csv(assessment_invasive, "data/TREClist-invasive.csv")
 
 ### All Families
+list <- select(list, Family, Genus, Species, SpeciesAcro, MainCodeUSDA,
+               CultivatedOnly, EstabdInFL, Native)
+
 all_families <- family_count(list)
 #write_csv(all_families, "output/TRECfamilies-all.csv")
 
