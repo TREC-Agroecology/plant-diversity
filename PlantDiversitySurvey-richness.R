@@ -11,11 +11,21 @@ library(agricolae)
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
-  mutate(genus_species = paste(tolower(str_extract(genus, "....")),
-                               tolower(str_extract(species, "..")), 
-                               sep=".")) %>%
-  separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
+  filter(!is.na(genus)) %>%
+  mutate(genus_species = paste(tolower(str_extract(genus, "...")),
+                               tolower(str_trunc(species, 3, "left", "")), 
+                               sep="")) %>%
+  separate(code, c("big_plot", "corner", "small_plot"), sep="\\.") %>% 
      # Expect missing pieces for 100m2 plots
+  select(block, site, big_plot, corner, small_plot, genus_species)
+
+echo <- read.csv("data/ECHO-surveys.csv") %>% 
+  filter(UncertainId %in% c(NA, "Species")) %>%
+  mutate(genus_species = tolower(genus_species)) %>%
+  separate(code, c("big_plot", "corner", "small_plot"), sep="\\.") %>%
+  select(block, site, big_plot, corner, small_plot, genus_species)
+
+surveys_w_plots <- bind_rows(surveys_w_plots, echo)
 
 ## Scale Summaries
 
@@ -40,12 +50,12 @@ big_plots <- mutate(big_plots, site_stat = paste(block, site, sep=""))
 sites <- surveys_w_plots %>%
   group_by(block, site) %>%
   distinct(genus_species) %>%
-  summarize(records = n())
+  summarize(richness = n())
 
 blocks <- surveys_w_plots %>%
   group_by(block) %>%
   distinct(genus_species) %>%
-  summarize(records = n())
+  summarize(richness = n())
 
 
 ## Combined Summaries
@@ -66,13 +76,13 @@ ggsave("output/richness_ten.png", width = 12, height = 5)
 
 site_avg <- record_counts %>%
   group_by(block, site) %>%
-  summarize(avg_ones = round(mean(ones), 0), sd_ones = round(sd(ones), 2),
+  summarize(avg_ones = round(mean(ones, na.rm=TRUE), 0), sd_ones = round(sd(ones), 2),
             avg_tens = round(mean(tens), 0), sd_tens = round(sd(tens), 2),
             avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2))
 
 site_avg_plot <- record_counts %>%
   group_by(block, site) %>%
-  summarize("1" = round(mean(ones), 0),
+  summarize("1" = round(mean(ones, na.rm=TRUE), 0),
             "10" = round(mean(tens), 0),
             "100" = round(mean(hundreds), 0))
 site_avg_plot <- gather(site_avg_plot, scale, average, "1":"100")
