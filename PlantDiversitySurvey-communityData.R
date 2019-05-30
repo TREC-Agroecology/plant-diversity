@@ -133,7 +133,7 @@ sink()
 
 ### Hundreds Rank
 rm(species_rank)
-names_list <- c("genus_species")
+names_list <- c("genus", "species", "genus_species")
 for (c in unique(plots_hundreds$cluster)){
   names_list <- c(names_list, c(paste("count", c, sep="_"), paste("rank", c, sep="_")))
   blocks <- filter(plots_hundreds, cluster == c)
@@ -156,7 +156,7 @@ for (c in unique(plots_hundreds$cluster)){
 names(species_rank) <- c(names_list)
 
 rank_table <- species_rank %>%
-  select(genus_species, starts_with("rank_"))
+  select(genus, species, starts_with("rank_"))
 
 sink("output/top-species.txt")
 
