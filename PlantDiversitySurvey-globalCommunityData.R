@@ -25,7 +25,7 @@ surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
   filter(!is.na(genus)) %>%
   mutate(genus_species = paste(tolower(str_extract(genus, "...")),
-                               tolower(str_trunc(species, 3, "left", "")), 
+                               tolower(str_trunc(species, 3, "right", "")), 
                                sep="")) %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.") %>% 
   # Expect missing pieces for 100m2 plots
@@ -107,7 +107,8 @@ ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(b
   geom_point(cex=5) +
   #geom_text(color="black") +
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
-  theme_bw(base_size=20, base_family="Helvetica")
+  theme_bw(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
 ggsave("output/nmds-10-global.png", width = 8, height = 6)
 
 perm_plots_10 <- adonis(dist_plots_10 ~ plots_tens$status + plots_tens$cluster +
@@ -126,12 +127,13 @@ nmds_plots_100 <- metaMDS(dist_plots_100, k=2, try=100, trace=TRUE)
 nmds_plots_scores_100 <- plots_hundreds %>%
   bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2])
 
-ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
+ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=(-1*NMDS2), shape=site, color=as.factor(block))) +
                               #label = big_plot)) +
   geom_point(cex=5) +
   #geom_text(color="black") +
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
-  theme_bw(base_size=20, base_family="Helvetica")
+  theme_bw(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
 ggsave("output/nmds-100-global.png", width = 8, height = 6)
 
 perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster +
