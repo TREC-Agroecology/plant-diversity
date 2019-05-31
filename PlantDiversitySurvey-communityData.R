@@ -97,7 +97,8 @@ ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(b
   geom_point(cex=5) +
   #geom_text(color="black") +
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
-  theme_bw(base_size=20, base_family="Helvetica")
+  theme_bw(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
 ggsave("output/nmds-10.png", width = 8, height = 6)
 
 perm_plots_10 <- adonis(dist_plots_10 ~ plots_tens$status + plots_tens$cluster +
@@ -121,7 +122,8 @@ ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(
   geom_point(cex=5) +
   #geom_text(color="black") +
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
-  theme_bw(base_size=20, base_family="Helvetica")
+  theme_bw(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
 ggsave("output/nmds-100.png", width = 8, height = 6)
 
 perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster +
