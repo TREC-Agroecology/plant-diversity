@@ -13,7 +13,7 @@ surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 surveys_w_plots <- surveys %>%
   filter(!is.na(genus)) %>%
   mutate(genus_species = paste(tolower(str_extract(genus, "...")),
-                               tolower(str_trunc(species, 3, "left", "")), 
+                               tolower(str_trunc(species, 3, "right", "")), 
                                sep="")) %>%
   separate(code, c("big_plot", "corner", "small_plot"), sep="\\.") %>% 
      # Expect missing pieces for 100m2 plots
