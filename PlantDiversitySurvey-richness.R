@@ -92,7 +92,8 @@ ggplot(site_avg_plot, aes(x=scale, y=average, group=site_stat)) +
   geom_line() +
   geom_point(size=3, aes(shape=site, color=as.factor(block))) +
   labs(x="Scale [m2]", y="Average Richness", shape="Site", color="Block") +
-  theme_classic(base_size=20, base_family="Helvetica")
+  theme_classic(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
 ggsave("output/avg_richness.png", width = 5, height = 4)  
 
 ## ANOVA and Tukey Post Hoc
