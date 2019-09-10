@@ -144,6 +144,7 @@ print(perm_plots_100)
 sink()
 
 ### Hundreds Rank
+rm(species_rank)
 names_list <- c("genus_species")
 for (c in unique(plots_hundreds$cluster)){
   names_list <- c(names_list, c(paste("count", c, sep="_"), paste("rank", c, sep="_")))
@@ -174,7 +175,6 @@ sink("output/top-species-global.txt")
 top_open <- rank_table %>%
   filter(rank_open <= 3) %>%
   arrange(rank_open) %>%
-  left_join(all_species) %>%
   select(genus_species, everything(), -rank_open)
 
 cat("Open\n")
@@ -182,7 +182,6 @@ as.data.frame(top_open)
 
 top_lawn <- rank_table %>%
   filter(rank_lawn == 1) %>%
-  left_join(all_species) %>%
   select(genus_species, everything(), -rank_lawn)
 
 cat("\nLawn\n")
@@ -190,7 +189,6 @@ as.data.frame(top_lawn)
 
 top_orchard <- rank_table %>%
   filter(rank_orchard == 1) %>%
-  left_join(all_species) %>%
   select(genus_species, everything(), -rank_orchard)
 
 cat("\nOrchard\n")
@@ -198,7 +196,6 @@ as.data.frame(top_orchard)
 
 top_hammock <- rank_table %>%
   filter(rank_hammock == 1) %>%
-  left_join(all_species) %>%
   select(genus_species, everything(), -rank_hammock)
 
 cat("\nHammock\n")
@@ -206,7 +203,6 @@ as.data.frame(top_hammock)
 
 top_echo <- rank_table %>%
   filter(rank_echo <= 3) %>%
-  left_join(all_species) %>%
   select(genus_species, everything(), -rank_echo)
 
 cat("\nECHO\n")
