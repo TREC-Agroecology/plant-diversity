@@ -53,7 +53,8 @@ hundreds <- surveys_w_plots %>%
   distinct(genus_species)
 
 status <- data.frame(block = c(1, 4, 14, 15, 31, 32), 
-                     status = c("old", "old", "new", "new", "old", "new"))
+                     status = c("old", "old", "new", "new", "old", "new"),
+                     pub_site = c("TREC-NW", "TREC-NE", "TREC-SW", "TREC-SE", "ECHO-E", "ECHO-W"))
 cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15, 31, 31, 32, 32),
                       site = rep(c("N", "S"), 6),
                       cluster = c("open", "open", "open", "lawn",
@@ -127,16 +128,16 @@ nmds_plots_100 <- metaMDS(dist_plots_100, k=2, try=100, trace=TRUE)
 nmds_plots_scores_100 <- plots_hundreds %>%
   bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2])
 
-ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=(-1*NMDS2), shape=site, color=as.factor(block))) +
+ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=(-1*NMDS2), shape=site, color=as.factor(pub_site))) +
                               #label = big_plot)) +
   geom_point(cex=5) +
   #geom_text(color="black") +
-  labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
+  labs(x="NMDS1", y="NMDS2", shape="Plot", color="Site") +
   theme_bw(base_size=20, base_family="Helvetica") +
   scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
 ggsave("output/nmds-100-global.png", width = 8, height = 6)
 
-perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster +
+perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$cluster +
                        plots_hundreds$block + plots_hundreds$site_code, permutations = 1000)
 
 sink("output/permanova-100-global.txt")
