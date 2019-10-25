@@ -27,6 +27,9 @@ echo <- read.csv("data/ECHO-surveys.csv") %>%
 
 surveys_w_plots <- bind_rows(surveys_w_plots, echo)
 
+pub_sites <- data.frame(block = c(1, 4, 14, 15, 31, 32), 
+                     pub_site = c("TREC-NW", "TREC-NE", "TREC-SW", "TREC-SE", "ECHO-E", "ECHO-W"))
+
 ## Scale Summaries
 
 ones <- surveys_w_plots %>%
@@ -60,9 +63,11 @@ blocks <- surveys_w_plots %>%
 
 ## Combined Summaries
 
-record_counts <- right_join(ones, tens)
-record_counts <- inner_join(record_counts, big_plots)
-record_counts <- mutate(record_counts, site_stat = paste(block, site, sep=""))
+record_counts <- ones %>% 
+  right_join(tens) %>% 
+  inner_join(big_plots) %>% 
+  mutate(site_stat = paste(block, site, sep="")) %>% 
+  left_join(pub_sites)
 
 
 ## Calculate and visualize richness among scales
@@ -81,18 +86,18 @@ site_avg <- record_counts %>%
             avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2))
 
 site_avg_plot <- record_counts %>%
-  group_by(block, site) %>%
+  group_by(pub_site, site) %>%
   summarize("1" = round(mean(ones, na.rm=TRUE), 0),
             "10" = round(mean(tens), 0),
             "100" = round(mean(hundreds), 0))
 site_avg_plot <- gather(site_avg_plot, scale, average, "1":"100")
-site_avg_plot <- mutate(site_avg_plot, site_stat = paste(block, site, sep=""))
+site_avg_plot <- mutate(site_avg_plot, site_stat = paste(pub_site, site, sep="-"))
 
 ggplot(site_avg_plot, aes(x=scale, y=average, group=site_stat)) +
   geom_line() +
-  geom_point(size=3, aes(shape=site, color=as.factor(block))) +
-  labs(x="Scale [m2]", y="Average Richness", shape="Site", color="Block") +
-  theme_classic(base_size=20, base_family="Helvetica") +
+  geom_point(size=3, alpha = 0.8,  aes(shape=site, color=as.factor(pub_site))) +
+  labs(x="Scale [m2]", y="Average Richness", shape="Plot", color="Site") +
+  theme_classic(base_size=14, base_family="Helvetica") +
   scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
 ggsave("output/avg_richness.png", width = 5, height = 4)  
 
