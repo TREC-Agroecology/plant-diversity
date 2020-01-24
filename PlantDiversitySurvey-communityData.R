@@ -1,6 +1,7 @@
 ### Create 'Community data' table for vegan package from NEON sampling data
 
 library(vegan)
+library(betapart)
 library(tidyverse)
 
 
@@ -44,21 +45,21 @@ hundreds <- surveys_w_plots %>%
   group_by(block, site, big_plot) %>%
   distinct(genus_species)
 
-status <- data.frame(block = c(1,4,14,15), status = c("old", "old", "new", "new"))
 cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15),
                       site = rep(c("N", "S"), 4),
-                      cluster = c("open", "open", "open", "lawn",
-                                  "lawn", "hammock", "orchard", "orchard"))
+                      status = c("high", "high", "low", "high",
+                                 "high", "low", "low", "low"),
+                      cluster = c("open", "open", "lawn", "open",
+                                  "open", "hammock", "orchard", "orchard"))
 plots_tens <- distinct(tens, big_plot, corner) %>%
   mutate(site_code = paste(block, site, sep = "")) %>%
-  left_join(status, by = c("block")) %>%
   left_join(cluster, by = c("block", "site"))
 plots_hundreds <- distinct(surveys_w_plots, block, site, big_plot) %>%
   mutate(site_code = paste(block, site, sep = "")) %>%
-  left_join(status, by = c("block")) %>%
   left_join(cluster, by = c("block", "site"))
 plots_site <- distinct(surveys_w_plots, block, site)
 
+plots_tens_mixed <- read_csv("data/plots_tens_mixed.csv") # mixed habitat classificiation
 
 ## Shannon diversity and evenness at various scales
 
@@ -118,7 +119,7 @@ nmds_plots_scores_100 <- plots_hundreds %>%
   bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2])
 
 ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(block))) +
-                              #label = big_plot)) +
+  #label = big_plot)) +
   geom_point(cex=5) +
   #geom_text(color="black") +
   labs(x="NMDS1", y="NMDS2", shape="Site", color="Block") +
@@ -126,10 +127,63 @@ ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=site, color=as.factor(
   scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
 ggsave("output/nmds-100.png", width = 8, height = 6)
 
-perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster +
-                       plots_hundreds$block + plots_hundreds$site_code, permutations = 1000)
+perm_plots_100 <- adonis(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster, permutations = 1000)
 
 sink("output/permanova-100.txt")
+print(perm_plots_100)
+sink()
+
+### Tens Habitat
+
+dist_plots_10 <- vegdist(matrix_ten, "bray")
+nmds_plots_10 <- metaMDS(dist_plots_10, k=2, try=100, trace=TRUE)
+
+nmds_plots_scores_10 <- plots_tens_mixed %>%
+  bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2])
+
+ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=status, color=as.factor(cluster))) +
+  #label = paste(big_plot,corner))) +
+  geom_point(cex=5) +
+  #geom_text(color="black") +
+  labs(x="NMDS1", y="NMDS2", shape="Soil Disturbance", color="Habitat") +
+  theme_bw(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
+ggsave("output/nmds-10-habitat.png", width = 8, height = 6)
+
+perm_plots_10_soil_habitat <- adonis2(dist_plots_10 ~ plots_tens_mixed$status + plots_tens_mixed$cluster,
+                                      permutations = 1000)
+perm_plots_10 <- adonis2(dist_plots_10 ~ plots_tens_mixed$status + plots_tens_mixed$cluster +
+                          plots_tens_mixed$block + plots_tens_mixed$site_code, permutations = 1000)
+
+sink("output/permanova-10-habitat.txt")
+print(perm_plots_10_soil_habitat)
+print(perm_plots_10)
+sink()
+
+### Hundreds Habitat
+
+dist_plots_100 <- vegdist(matrix_hundred, "bray")
+nmds_plots_100 <- metaMDS(dist_plots_100, k=2, try=100, trace=TRUE)
+
+nmds_plots_scores_100 <- plots_hundreds %>%
+  bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2])
+
+ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=status, color=as.factor(cluster))) +
+  #label = big_plot)) +
+  geom_point(cex=5) +
+  #geom_text(color="black") +
+  labs(x="NMDS1", y="NMDS2", shape="Soil Disturbance", color="Habitat") +
+  theme_bw(base_size=20, base_family="Helvetica") +
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
+ggsave("output/nmds-100-habitat.png", width = 8, height = 6)
+
+perm_plots_100_soil_habitat <- adonis2(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster,
+                                       permutations = 1000)
+perm_plots_100 <- adonis2(dist_plots_100 ~ plots_hundreds$status + plots_hundreds$cluster +
+                            plots_hundreds$block + plots_hundreds$site_code, permutations = 1000)
+
+sink("output/permanova-100-habitat.txt")
+print(perm_plots_100_soil_habitat)
 print(perm_plots_100)
 sink()
 
