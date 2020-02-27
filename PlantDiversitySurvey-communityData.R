@@ -61,6 +61,14 @@ plots_site <- distinct(surveys_w_plots, block, site)
 
 plots_tens_mixed <- read_csv("data/plots_tens_mixed.csv") # mixed habitat classificiation
 
+## Species List
+
+all_species_count <- surveys_w_plots %>%
+  filter(!is.na(genus)) %>%
+  group_by(genus, species, uncertain, genus_species) %>%
+  summarize(count=n())
+write_csv(all_species_count, "output/TREC-survey-list.csv")
+
 ## Shannon diversity and evenness at various scales
 
 matrix_ten <- build_community_data(all_species, plots_tens, tens)
