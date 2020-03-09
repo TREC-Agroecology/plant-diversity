@@ -152,8 +152,11 @@ richness_results <- record_counts %>%
   filter(!is.na(cluster)) %>% 
   gather(scale, richness, "1":"100")
 
+sink("output/species_area.txt")
 for (habitat in unique(cluster$cluster)) {
   habitat_results <- filter(richness_results, cluster == habitat)
   test <- lm(log10(richness) ~ log10(as.numeric(scale)), data=habitat_results)
-  print(paste(habitat, round(summary(test)$r.squared, 3), summary(test)$coeff[2,1]))
+  print(paste(habitat, round(summary(test)$r.squared, 3), 
+              round(summary(test)$coeff[2,1]), 3))
 }
+sink()
