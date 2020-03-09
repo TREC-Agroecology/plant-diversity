@@ -10,13 +10,17 @@ library(agricolae)
 ## Data
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
-surveys_w_plots <- surveys %>%
+status <- read_csv("data/TRECstatus.csv")
+invasive <- read_csv("data/TRECinvasive.csv")
+
+surveys_w_plot <- surveys %>%
   filter(!is.na(genus)) %>%
   mutate(genus_species = paste(tolower(str_extract(genus, "...")),
                                tolower(str_trunc(species, 3, "right", "")), 
                                sep="")) %>%
-  separate(code, c("big_plot", "corner", "small_plot"), sep="\\.") %>% 
+  separate(code, c("big_plot", "corner", "small_plot"), sep="\\.")
      # Expect missing pieces for 100m2 plots
+surveys_w_plots <- surveys_w_plot %>% 
   select(block, site, big_plot, corner, small_plot, genus_species)
 
 echo <- read.csv("data/ECHO-surveys.csv") %>% 
@@ -143,6 +147,18 @@ cat("\nsite\n")
 HSD.test(ones_aov, "site_stat")$groups
 
 sink()
+
+## Status Counts
+
+block_status <- surveys_w_plot %>%
+  left_join(cluster) %>% 
+  group_by(cluster, block, site) %>%
+  distinct(genus, species) %>% 
+  left_join(status) %>% 
+  left_join(invasive) %>% 
+  mutate(assessment = str_replace(assessment, ".*", "1")) %>%
+  summarize(richness = n(), natives = sum(native, na.rm=TRUE),
+            established = sum(established_FL, na.rm=TRUE) - sum(native, na.rm=TRUE))
 
 ## Species Area Curves [[TREC ONLY]]
 
