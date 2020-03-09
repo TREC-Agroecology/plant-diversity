@@ -30,6 +30,13 @@ surveys_w_plots <- bind_rows(surveys_w_plots, echo)
 pub_sites <- data.frame(block = c(1, 4, 14, 15, 31, 32), 
                      pub_site = c("TREC-NW", "TREC-NE", "TREC-SW", "TREC-SE", "ECHO-E", "ECHO-W"))
 
+cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15),
+                      site = rep(c("N", "S"), 4),
+                      status = c("high", "high", "low", "high",
+                                 "high", "low", "low", "low"),
+                      cluster = c("open", "open", "lawn", "open",
+                                  "open", "hammock", "orchard", "orchard"))
+
 ## Scale Summaries
 
 ones <- surveys_w_plots %>%
@@ -67,10 +74,16 @@ record_counts <- ones %>%
   right_join(tens) %>% 
   inner_join(big_plots) %>% 
   mutate(site_stat = paste(block, site, sep="")) %>% 
+  left_join(cluster)
+
+record_counts_sites <- ones %>% 
+  right_join(tens) %>% 
+  inner_join(big_plots) %>% 
+  mutate(site_stat = paste(block, site, sep="")) %>% 
   left_join(pub_sites)
 
 
-## Calculate and visualize richness among scales
+## Calculate and visualize richness among scales [[TREC ONLY]]
 
 ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
   geom_histogram(binwidth = 5) +
@@ -86,19 +99,19 @@ site_avg <- record_counts %>%
             avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2))
 
 site_avg_plot <- record_counts %>%
-  group_by(pub_site, site) %>%
+  group_by(status, cluster) %>%
   summarize("1" = round(mean(ones, na.rm=TRUE), 0),
             "10" = round(mean(tens), 0),
-            "100" = round(mean(hundreds), 0))
-site_avg_plot <- gather(site_avg_plot, scale, average, "1":"100")
-site_avg_plot <- mutate(site_avg_plot, site_stat = paste(pub_site, site, sep="-"))
+            "100" = round(mean(hundreds), 0)) %>% 
+  filter(!is.na(cluster)) %>% 
+  gather(scale, average, "1":"100")
 
-ggplot(site_avg_plot, aes(x=scale, y=average, group=site_stat)) +
+ggplot(site_avg_plot, aes(x=scale, y=average, group=cluster)) +
   geom_line() +
-  geom_point(size=3, alpha = 0.8,  aes(shape=site, color=as.factor(pub_site))) +
-  labs(x="Scale [m2]", y="Average Richness", shape="Plot", color="Site") +
+  geom_point(size=3, alpha = 0.8,  aes(shape=status, color=as.factor(cluster))) +
+  labs(x="Scale [m2]", y="Average Richness", shape="Soil Disturbance", color="Habitat") +
   theme_classic(base_size=14, base_family="Helvetica") +
-  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7"))
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
 ggsave("output/avg_richness.png", width = 5, height = 4)  
 
 ## ANOVA and Tukey Post Hoc
@@ -130,3 +143,17 @@ cat("\nsite\n")
 HSD.test(ones_aov, "site_stat")$groups
 
 sink()
+
+## Species Area Curves [[TREC ONLY]]
+
+richness_results <- record_counts %>% 
+  ungroup() %>% 
+  select(cluster, "1" = ones, "10" = tens, "100" = hundreds) %>%
+  filter(!is.na(cluster)) %>% 
+  gather(scale, richness, "1":"100")
+
+for (habitat in unique(cluster$cluster)) {
+  habitat_results <- filter(richness_results, cluster == habitat)
+  test <- lm(log10(richness) ~ log10(as.numeric(scale)), data=habitat_results)
+  print(paste(habitat, round(summary(test)$r.squared, 3), summary(test)$coeff[2,1]))
+}
