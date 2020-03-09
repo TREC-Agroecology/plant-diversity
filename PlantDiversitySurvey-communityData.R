@@ -23,6 +23,9 @@ build_community_data <- function(species, plots, survey){
 ## Data 
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
+status <- read_csv("data/TRECstatus.csv")
+invasive <- read_csv("data/TRECinvasive.csv")
+
 surveys_w_plots <- surveys %>%
   mutate(genus_species = paste(tolower(str_extract(genus, "....")),
                                tolower(str_extract(species, "...")), 
@@ -32,7 +35,9 @@ surveys_w_plots <- surveys %>%
 all_species <- surveys_w_plots %>%
   filter(!is.na(genus)) %>%
   distinct(genus_species, genus, species) %>%
-  arrange(genus_species)
+  arrange(genus_species) %>% 
+  left_join(status) %>% 
+  left_join(invasive)
   
 tens <- surveys_w_plots %>%
   filter(!is.na(genus)) %>%
