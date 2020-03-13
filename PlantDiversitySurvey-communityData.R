@@ -150,6 +150,7 @@ sink()
 
 dist_plots_10 <- vegdist(matrix_ten, "bray")
 nmds_plots_10 <- metaMDS(dist_plots_10, k=2, try=100, trace=TRUE)
+stressplot(nmds_plots_10)
 
 nmds_plots_scores_10 <- plots_tens_mixed %>%
   bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2])
