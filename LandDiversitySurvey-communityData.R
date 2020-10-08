@@ -34,6 +34,12 @@ surveys_w_plots <- surveys %>%
 
 surveys_w_plots$block <- str_replace(surveys_w_plots$block, "B02", "B01")
 
+pub_blocks <- data.frame(block = c("B01", "B04", "B14", "B15"), 
+                         pub_block = factor(c("Old-Ag-NW", "Old-Ag-NE", "New-Ag-SW", "New-Ag-SE"), 
+                                            levels = c("Old-Ag-NW", "Old-Ag-NE", "New-Ag-SW", "New-Ag-SE")))
+
+pub_sites <- data.frame(site = c("cc", "gr"), pub_site = c("Ag", "Lawn"))
+
 all_species <- surveys_w_plots %>%
   distinct(genus_species) %>%  # rm(, genus, species)
   arrange(genus_species)  # %>% 
@@ -93,9 +99,11 @@ dist_plots_10 <- vegdist(matrix_ten, "bray")
 nmds_plots_10 <- metaMDS(dist_plots_10, k=2, try=100, trace=TRUE)
 
 nmds_plots_scores_10 <- plots_tens %>%
-  bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2])
+  bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2]) %>% 
+  left_join(pub_blocks) %>% 
+  left_join(pub_sites)
 
-ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=site, color=block)) +
+ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=pub_site, color=pub_block)) +
                             #label = paste(big_plot,corner))) +
   geom_point(cex=5) +
   #geom_text(color="black") +
