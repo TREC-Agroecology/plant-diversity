@@ -23,8 +23,11 @@ surveys_w_plots <- surveys_w_plot %>%
 
 surveys_w_plots$block <- str_replace(surveys_w_plots$block, "B02", "B01")
 
-# pub_sites <- data.frame(block = c(1, 4, 14, 15, 31, 32), 
-#                      pub_site = c("TREC-NW", "TREC-NE", "TREC-SW", "TREC-SE", "ECHO-E", "ECHO-W"))
+pub_blocks <- data.frame(block = c("B01", "B04", "B14", "B15"), 
+                      pub_block = factor(c("Old-Ag-NW", "Old-Ag-NE", "New-Ag-SW", "New-Ag-SE"), 
+                                         levels = c("Old-Ag-NW", "Old-Ag-NE", "New-Ag-SW", "New-Ag-SE")))
+
+pub_sites <- data.frame(site = c("cc", "gr"), pub_site = c("Ag", "Lawn"))
 
 ## Scale Summaries
 
@@ -37,7 +40,9 @@ tens <- surveys_w_plots %>%
   filter(!is.na(corner)) %>%
   group_by(block, site, big_plot, corner) %>%
   distinct(genus_species) %>%
-  summarize(tens = n())
+  summarize(tens = n()) %>% 
+  left_join(pub_sites) %>% 
+  left_join(pub_blocks)
 
 big_plots <- surveys_w_plots %>%  ## Big_plots = 100m
   group_by(block, site, big_plot) %>%
@@ -50,6 +55,7 @@ sites <- surveys_w_plots %>%
   group_by(block, site) %>%
   distinct(genus_species) %>%
   summarize(richness = n())
+write_csv(sites, "output/block_site_total_richness.csv")
 
 blocks <- surveys_w_plots %>%
   group_by(block) %>%
@@ -67,14 +73,16 @@ record_counts <- ones %>%
 record_counts_sites <- ones %>% 
   right_join(tens) %>% 
   inner_join(big_plots) %>% 
-  mutate(site_stat = paste(block, site, sep=""))
+  mutate(site_stat = paste(block, site, sep="")) %>% 
+  left_join(pub_sites) %>% 
+  left_join(pub_blocks)
 
 
 ## Calculate and visualize richness among scales
 
-ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
+ggplot(tens, aes(x=tens, fill=pub_site)) +  # tens visualization
   geom_histogram(binwidth = 5) +
-  facet_grid(.~block) +
+  facet_grid(.~pub_block) +
   labs(x="Richness", y="Count", fill="Site") +
   theme_bw(base_size=24, base_family="Helvetica")
 ggsave("output/2020_richness_ten.png", width = 12, height = 5)  
@@ -83,18 +91,20 @@ site_avg <- record_counts %>%
   group_by(block, site) %>%
   summarize(avg_ones = round(mean(ones, na.rm=TRUE), 0), sd_ones = round(sd(ones), 2),
             avg_tens = round(mean(tens), 0), sd_tens = round(sd(tens), 2),
-            avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2))
+            avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2)) 
 
 site_avg_plot <- record_counts %>%
   group_by(block, site, site_stat) %>%
   summarize("1" = round(mean(ones, na.rm=TRUE), 0),
             "10" = round(mean(tens), 0),
             "100" = round(mean(hundreds), 0)) %>% 
-  gather(scale, average, "1":"100")
+  gather(scale, average, "1":"100") %>% 
+  left_join(pub_sites) %>% 
+  left_join(pub_blocks)
 
 ggplot(site_avg_plot, aes(x=scale, y=average, group=site_stat)) +
   geom_line() +
-  geom_point(size=3, alpha = 0.8,  aes(shape=site, color=block)) +
+  geom_point(size=3, alpha = 0.8,  aes(shape=pub_site, color=pub_block)) +
   labs(x="Scale [m2]", y="Average Richness", shape="Site", color="Block") +
   theme_classic(base_size=14, base_family="Helvetica") +
   scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
