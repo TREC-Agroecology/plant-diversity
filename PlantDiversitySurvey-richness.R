@@ -10,9 +10,15 @@ library(agricolae)
 ## Data
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
-status <- read_csv("data/TRECstatus.csv")
+status <- read_csv("data/TRECstatus.csv") %>% 
+  mutate(genus_species = paste(tolower(str_extract(genus, "...")),
+                        tolower(str_trunc(species, 3, "right", "")), 
+                        sep=""))
 invasive <- read_csv("data/TRECinvasive.csv") %>% 
-  mutate(invasive = 1)
+  mutate(invasive = 1, 
+         genus_species = paste(tolower(str_extract(genus, "...")),
+                               tolower(str_trunc(species, 3, "right", "")), 
+                               sep=""))
 
 surveys_w_plot <- surveys %>%
   filter(!is.na(genus)) %>%
@@ -35,12 +41,14 @@ surveys_w_plots <- bind_rows(surveys_w_plots, echo)
 pub_sites <- data.frame(block = c(1, 4, 14, 15, 31, 32), 
                      pub_site = c("TREC-NW", "TREC-NE", "TREC-SW", "TREC-SE", "ECHO-E", "ECHO-W"))
 
-cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15),
-                      site = rep(c("N", "S"), 4),
+cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15, 31, 31, 32, 32),
+                      site = rep(c("N", "S"), 6),
                       status = c("high", "high", "low", "high",
-                                 "high", "low", "low", "low"),
+                                 "high", "low", "low", "low", 
+                                 "sand", "sand", "sand", "sand"),
                       cluster = c("open", "open", "lawn", "open",
-                                  "open", "hammock", "orchard", "orchard"))
+                                  "open", "hammock", "orchard", "orchard",
+                                  "flatwood", "flatwood", "flatwood", "flatwood"))
 
 ## Scale Summaries
 
@@ -98,7 +106,7 @@ ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
 ggsave("output/richness_ten.png", width = 12, height = 5)  
 
 site_avg <- record_counts %>%
-  group_by(block, site) %>%
+  group_by(block, site, cluster) %>%
   summarize(avg_ones = round(mean(ones, na.rm=TRUE), 0), sd_ones = round(sd(ones), 2),
             avg_tens = round(mean(tens), 0), sd_tens = round(sd(tens), 2),
             avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2))
@@ -108,15 +116,16 @@ site_avg_plot <- record_counts %>%
   summarize("1" = round(mean(ones, na.rm=TRUE), 0),
             "10" = round(mean(tens), 0),
             "100" = round(mean(hundreds), 0)) %>% 
-  filter(!is.na(cluster)) %>% 
-  gather(scale, average, "1":"100")
+  gather(scale, average, "1":"100")  %>% 
+  mutate(cluster = factor(cluster, levels=c("open", "lawn", "orchard", 
+                                            "hammock", "flatwood")))
 
 ggplot(site_avg_plot, aes(x=scale, y=average, group=cluster)) +
   geom_line() +
   geom_point(size=3, alpha = 0.8,  aes(shape=status, color=as.factor(cluster))) +
   labs(x="Scale [m2]", y="Average Richness", shape="Soil Disturbance", color="Habitat") +
   theme_classic(base_size=14, base_family="Helvetica") +
-  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2"))
+  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00"))
 ggsave("output/avg_richness.png", width = 5, height = 4)  
 
 ## ANOVA and Tukey Post Hoc
@@ -185,10 +194,10 @@ sink()
 
 ## Status Counts
 
-block_status <- surveys_w_plot %>%
+block_status <- surveys_w_plots %>%
   left_join(cluster) %>% 
   group_by(cluster, block, site) %>%
-  distinct(genus, species) %>% 
+  distinct(genus_species) %>% 
   left_join(status) %>% 
   left_join(invasive) %>% 
   summarize(richness = n(), natives = sum(native, na.rm=TRUE),
