@@ -11,7 +11,8 @@ library(agricolae)
 
 surveys <- read_csv("data/PlantDiversitySurvey-surveys.csv")
 status <- read_csv("data/TRECstatus.csv")
-invasive <- read_csv("data/TRECinvasive.csv")
+invasive <- read_csv("data/TRECinvasive.csv") %>% 
+  mutate(invasive = 1)
 
 surveys_w_plot <- surveys %>%
   filter(!is.na(genus)) %>%
@@ -148,6 +149,40 @@ HSD.test(ones_aov, "site_stat")$groups
 
 sink()
 
+big_plots_cluster <- left_join(big_plots, cluster)
+record_counts_cluster <- left_join(record_counts, cluster)
+
+sink("output/richness_cluster.txt")
+
+hundreds_aov <- aov(hundreds ~ cluster, data=big_plots_cluster)
+cat("hundreds ~ cluster\n") 
+print(summary(hundreds_aov))
+HSD.test(hundreds_aov, "cluster")$groups
+hundreds_aov <- aov(hundreds ~ status, data=big_plots_cluster)
+cat("\nhundreds ~ status\n") 
+print(summary(hundreds_aov))
+HSD.test(hundreds_aov, "status")$groups
+
+tens_aov <- aov(tens ~ cluster, data=record_counts_cluster)
+cat("\ntens ~ cluster\n") 
+print(summary(tens_aov))
+HSD.test(tens_aov, "cluster")$groups
+tens_aov <- aov(tens ~ status, data=record_counts_cluster)
+cat("\ntens ~ status\n") 
+print(summary(tens_aov))
+HSD.test(tens_aov, "status")$groups
+
+ones_aov <- aov(ones ~ cluster, data=record_counts_cluster)
+cat("\nones ~ cluster\n") 
+summary(ones_aov)
+HSD.test(ones_aov, "cluster")$groups
+ones_aov <- aov(ones ~ status, data=record_counts_cluster)
+cat("\nones ~ status\n") 
+summary(ones_aov)
+HSD.test(ones_aov, "status")$groups
+
+sink()
+
 ## Status Counts
 
 block_status <- surveys_w_plot %>%
@@ -156,9 +191,18 @@ block_status <- surveys_w_plot %>%
   distinct(genus, species) %>% 
   left_join(status) %>% 
   left_join(invasive) %>% 
-  mutate(assessment = str_replace(assessment, ".*", "1")) %>%
   summarize(richness = n(), natives = sum(native, na.rm=TRUE),
-            established = sum(established_FL, na.rm=TRUE) - sum(native, na.rm=TRUE))
+            established = sum(established_FL, na.rm=TRUE) - sum(native, na.rm=TRUE),
+            invasive = sum(invasive, na.rm=TRUE))
+
+cluster_status <- block_status %>% 
+  group_by(cluster) %>% 
+  summarize(avg_richness = mean(richness),
+            avg_natives = mean(natives),
+            avg_established = mean(established),
+            avg_invasive = mean(invasive))
+
+
 
 ## Species Area Curves [[TREC ONLY]]
 
@@ -169,10 +213,12 @@ richness_results <- record_counts %>%
   gather(scale, richness, "1":"100")
 
 sink("output/species_area.txt")
+print(paste("habitat", "r2", "slope","intercept"))
 for (habitat in unique(cluster$cluster)) {
   habitat_results <- filter(richness_results, cluster == habitat)
   test <- lm(log10(richness) ~ log10(as.numeric(scale)), data=habitat_results)
   print(paste(habitat, round(summary(test)$r.squared, 3), 
-              round(summary(test)$coeff[2,1]), 3))
+              round(summary(test)$coeff[2,1], 3),
+              round(summary(test)$coeff[1,1], 3)))
 }
 sink()
