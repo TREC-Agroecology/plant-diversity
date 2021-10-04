@@ -1,0 +1,248 @@
+Location,Site,SiteCode,Soil,Rock,Wood,Litter,StandingDead,Water,Lichen,Moss,OtherNonVascular,Scat
+TREC,Lawn,31.1.1,0,0,0,0,20,0,0,0,0,0
+TREC,Lawn,31.4.1,20,5,0,5,20,0,0,0,0,0
+TREC,Lawn,32.2.1,5,0,0,5,25,0,0,0,0,0
+TREC,Lawn,32.4.1,5,1,1,1,25,0,0,0,0,0
+TREC,Lawn,40.1.1,1,0,0,20,5,0,0,0,0,0
+TREC,Lawn,40.3.1,1,5,5,15,5,1,0,0,0,0
+TREC,Lawn,41.1.1,0,1,0,0,40,0,0,0,1,0
+TREC,Lawn,41.4.1,0.01,25,5,30,0,10,0,0,0,0
+TREC,Edge,31.1.1,5,10,5,25,1,0,0,0,0,0
+TREC,Edge,31.4.1,5,5,5,20,1,0,0,0,0,0
+TREC,Edge,32.2.1,0,5,5,85,0.5,0,0.5,0,0,0
+TREC,Edge,32.4.1,0.5,1,0.5,5,85,0,,0,0,0
+TREC,Edge,40.1.1,1,1,1,25,1,0,0,0,0.05,0
+TREC,Edge,40.3.1,5,30,5,10,1,0,0,0,0,0
+TREC,Edge,41.1.1,1,1,0.5,90,20,0,0,0,0,0
+TREC,Edge,41.4.1,5,1,1,50,30,0,0,0,0,0
+TREC,Center,31.1.1,5,20,10,20,10,0,1,0,0,0
+TREC,Center,31.4.1,0,15,5,70,25,0,1,0.5,0,0
+TREC,Center,32.2.1,5,0,5,50,1,0,0,0,0,0
+TREC,Center,32.4.1,1,1,5,50,1,0,0,0,0,0
+TREC,Center,40.1.1,1,5,0,20,30,0,1,0,0,0
+TREC,Center,40.3.1,1,10,1,30,0.1,0,1,0,0,0
+TREC,Center,41.1.1,1,5,5,70,0,0,1,0,1,0
+TREC,Center,41.4.1,1,1,1,70,0,0,0,0,0,0
+Navy Wells 39,Center,31.1.1,1,5,1,5,1,0,0,0,0,0
+Navy Wells 39,Center,31.4.1,5,10,1,5,0,0,0,0.01,0,0
+Navy Wells 39,Center,32.2.1,1,10,0,30,1,0,0.5,0,0,0
+Navy Wells 39,Center,32.4.1,1,10,0,20,0,0,1,0,0,0
+Navy Wells 39,Center,40.1.1,1,30,0,20,1,0,1,0,0.5,0
+Navy Wells 39,Center,40.3.1,1,10,1,20,0.1,0,1,0,0,0
+Navy Wells 39,Center,41.1.1,5,25,1,10,20,0,0,0,1,0
+Navy Wells 39,Center,41.4.1,1,15,1,20,20,0,0,1,1,0
+Navy Wells 39,Edge,31.1.1,1,1,1,20,1,0,1,0,1,0
+Navy Wells 39,Edge,31.4.1,5,35,1,30,0.5,0,5,0,0,0
+Navy Wells 39,Edge,32.2.1,1,1,10,60,10,0,1,0,0,0
+Navy Wells 39,Edge,32.4.1,5,15,0,10,40,0,0,0,1,0
+Navy Wells 39,Edge,40.1.1,5,30,1,30,1,0,5,0,1,0
+Navy Wells 39,Edge,40.3.1,10,20,5,30,1,0,5,0,0,0
+Navy Wells 39,Edge,41.1.1,1,10,0,10,45,0,1,0,1,0
+Navy Wells 39,Edge,41.4.1,1,60,1,30,5,0,1,0,5,0
+Fuchs Addition,Center,31.1.1,1,10,10,70,5,0,1,1,1,0
+Fuchs Addition,Center,31.4.1,10,25,10,25,15,0,0,1,0,0
+Fuchs Addition,Center,32.2.1,1,1,70,25,10,0,5,0,0,0
+Fuchs Addition,Center,32.4.1,5,15,10,10,1,0,1,1,1,0
+Fuchs Addition,Center,40.1.1,1,35,10,15,10,0,1,5,1,0
+Fuchs Addition,Center,40.3.1,1,35,10,20,30,0,0,1,1,0
+Fuchs Addition,Center,41.1.1,1,10,15,10,1,0,1,1,0,0
+Fuchs Addition,Center,41.4.1,1,10,30,20,5,0,1,1,0,0
+Fuchs Addition,Edge,31.1.1,1,10,15,70,15,0,1,1,1,0
+Fuchs Addition,Edge,31.4.1,1,0,1,80,30,0,1,1,0,0
+Fuchs Addition,Edge,32.2.1,0,0,5,80,0,0,1,0,0,0
+Fuchs Addition,Edge,32.4.1,0,0,30,30,5,0,1,5,0,0
+Fuchs Addition,Edge,40.1.1,0,5,5,60,20,0,1,1,0,0
+Fuchs Addition,Edge,40.3.1,5,1,20,80,40,0,1,0,0,0
+Fuchs Addition,Edge,41.1.1,1,0,5,75,1,0,1,0,0,0
+Fuchs Addition,Edge,41.4.1,1,5,10,40,1,0,1,0,0,0
+Fuchs Addition,Lawn,31.1.1,5,0,0,0,20,0,0,0,0,0
+Fuchs Addition,Lawn,31.4.1,1,0,0,1,30,1,0,0,0,0
+Fuchs Addition,Lawn,32.2.1,1,0,0,15,0,0,0,0,0,0
+Fuchs Addition,Lawn,40.1.1,1,0,0,1,35,0,0,0,0,0
+Fuchs Addition,Lawn,40.3.1,1,0,0,5,30,0,0,0,0,0
+Fuchs Addition,Lawn,41.1.1,5,0,0,30,0,0,0,0,0,0
+Fuchs Addition,Lawn,41.4.1,1,0,0,20,0,0,0,0,0,0
+Navy Wells,Lawn,31.1.1,1,0,0,5,45,0,0,0,0,0
+Navy Wells,Lawn,31.4.1,10,1,0,10,30,0,0,0,0,0
+Navy Wells,Lawn,32.2.1,1,1,0,1,0,0,0,0,0,0
+Navy Wells,Lawn,32.4.1,50,5,0,1,0,0,0,0,0,0
+Navy Wells,Lawn,40.1.1,20,1,0,5,40,0,0,0,0,1
+Navy Wells,Lawn,40.3.1,20,20,15,20,1,0,0,0,1,0
+Navy Wells,Lawn,41.1.1,20,10,1,20,0,0,0,0,0,0
+Navy Wells,Lawn,41.4.1,30,60,5,1,5,0,5,1,1,0
+Navy Wells,Edge,31.1.1,1,70,5,30,5,0,1,0,1,0
+Navy Wells,Edge,31.4.1,15,70,5,15,10,0,0,0,5,0
+Navy Wells,Edge,32.2.1,5,70,5,5,1,0,1,0,0,0
+Navy Wells,Edge,32.4.1,10,75,1,1,1,0,0,1,0,0
+Navy Wells,Edge,40.1.1,5,90,1,5,5,0,0,0,1,0
+Navy Wells,Edge,40.3.1,1,45,1,40,5,0,0,0,0,0
+Navy Wells,Edge,41.1.1,5,80,1,10,5,0,1,0,0,0
+Navy Wells,Edge,41.4.1,85,1,5,1,0,1,0,0,0,0
+Navy Wells,Center,31.1.1,30,45,10,15,5,0,1,0,1,0
+Navy Wells,Center,31.4.1,10,80,5,15,1,0,1,0,0,0
+Navy Wells,Center,32.2.1,5,80,5,10,0,0,1,0,0,0
+Navy Wells,Center,32.4.1,5,80,1,10,5,0,1,0,0,0
+Navy Wells,Center,40.1.1,15,80,1,5,5,0,1,0,0,0
+Navy Wells,Center,40.3.1,40,35,10,15,5,0,1,0,0,0
+Navy Wells,Center,41.1.1,10,85,1,10,1,0,1,0,0,0
+Navy Wells,Center,41.4.1,30,40,5,15,5,0,1,0,0,0
+Palm Drive,Lawn,31.1.1,1,0,5,20,1,0,1,0,1,0
+Palm Drive,Lawn,31.4.1,1,5,5,20,1,0,1,1,0,0
+Palm Drive,Lawn,32.2.1,1,0,40,30,10,0,0,5,0,0
+Palm Drive,Lawn,32.4.1,1,0,5,20,5,0,0,0,0,0
+Palm Drive,Lawn,40.1.1,1,5,0,60,30,0,0,1,1,0
+Palm Drive,Lawn,40.3.1,1,1,0,10,25,0,0,0,1,0
+Palm Drive,Lawn,41.1.1,1,10,5,30,30,0,0,0,1,0
+Palm Drive,Lawn,41.4.1,5,1,0,45,1,0,1,0,0,0
+Palm Drive,Edge,31.1.1,1,1,1,50,1,0,1,1,0,0
+Palm Drive,Edge,31.4.1,1,1,5,15,1,0,1,0,0,0
+Palm Drive,Edge,32.2.1,1,5,1,40,1,0,1,1,0,0
+Palm Drive,Edge,32.4.1,0,0,0,40,1,0,0,0,0,0
+Palm Drive,Edge,40.1.1,0,0,25,60,40,0,1,0,0,0
+Palm Drive,Edge,40.3.1,1,20,10,60,30,0,1,1,5,0
+Palm Drive,Edge,41.1.1,0,75,10,20,5,0,0,10,10,0
+Palm Drive,Edge,41.4.1,0,0,1,20,20,0,0,0,0,0
+Palm Drive,Center,31.1.1,1,15,10,74,5,0,1,5,1,0
+Palm Drive,Center,31.4.1,1,15,10,70,60,0,1,1,5,0
+Palm Drive,Center,32.2.1,1,10,5,40,1,0,5,1,1,0
+Palm Drive,Center,32.4.1,0,0,50,15,20,0,10,0,0,0
+Palm Drive,Center,40.1.1,0,0,10,45,45,0,1,1,1,0
+Palm Drive,Center,40.3.1,1,5,5,80,60,0,1,1,1,0
+Palm Drive,Center,41.1.1,1,5,5,20,1,0,5,1,0,0
+Palm Drive,Center,41.4.1,1,10,10,20,1,0,1,1,0,0
+Sunny Palms,Center,31.1.1,1,10,1,20,0,0,1,1,0,0
+Sunny Palms,Center,31.4.1,15,10,1,20,1,0,1,1,0,0
+Sunny Palms,Center,32.2.1,0,0,0,5,20,0,0,0,0,0
+Sunny Palms,Center,32.4.1,0,10,0,10,10,0,0,0,0,0
+Sunny Palms,Center,40.1.1,1,10,1,20,40,0,0,0,0,0
+Sunny Palms,Center,40.3.1,1,1,30,80,30,0,5,1,0,0
+Sunny Palms,Center,41.1.1,5,25,5,15,45,0,1,1,1,0
+Sunny Palms,Center,41.4.1,5,30,0,10,15,0,1,0,0,1
+Sunny Palms,Edge,31.1.1,1,20,1,20,0,0,1,1,0,0
+Sunny Palms,Edge,31.4.1,5,30,10,20,1,0,1,1,1,0
+Sunny Palms,Edge,32.2.1,0,0,0,20,1,0,0,0,0,0
+Sunny Palms,Edge,32.4.1,0,5,0,15,5,0,0,0,0,0
+Sunny Palms,Edge,40.1.1,0,35,10,5,10,0,1,0,0,0
+Sunny Palms,Edge,40.3.1,1,10,20,40,35,0,0,0,1,0
+Sunny Palms,Edge,41.1.1,1,30,1,20,40,0,1,0,1,0
+Sunny Palms,Edge,41.4.1,1,15,10,35,40,0,1,0,1,0
+Sunny Palms,Lawn,31.1.1,80,15,5,10,1,0,1,0,0,0
+Sunny Palms,Lawn,31.4.1,10,1,0,10,20,0,0,0,0,0
+Sunny Palms,Lawn,32.2.1,5,0,0,10,20,0,0,0,0,0
+Sunny Palms,Lawn,32.4.1,5,0,0,5,20,0,0,0,0,0
+Sunny Palms,Lawn,40.1.1,0,0,10,60,1,0,1,1,0,0
+Sunny Palms,Lawn,40.3.1,5,5,5,40,1,0,1,0,0,0
+Sunny Palms,Lawn,41.1.1,40,20,1,10,1,0,1,10,0,0
+Sunny Palms,Lawn,41.4.1,1,0,0,1,0,0,0,0,0,0
+Wilkins-Pierson Preserve ,Center,31.1.1,10,60,1,5,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Center,31.4.1,30,10,1,10,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Center,32.2.1,15,20,15,20,40,0,1,1,1,0
+Wilkins-Pierson Preserve ,Center,32.4.1,35,25,0,35,5,0,0,0,0,0
+Wilkins-Pierson Preserve ,Center,40.1.1,30,10,5,5,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Center,40.3.1,50,30,5,10,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Center,41.1.1,25,25,1,35,5,0,1,0,1,0
+Wilkins-Pierson Preserve ,Center,41.4.10,25,40,1,20,5,0,5,5,1,1
+Wilkins-Pierson Preserve ,Lawn,31.1.1,1,0,0,20,0,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,31.4.1,5,0,0,40,0,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,32.2.1,0,0,0,80,10,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,32.4.1,0,0,0,80,1,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,40.1.1,1,0,0,20,0,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,40.3.1,1,0,0,40,0,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,41.1.1,1,0,0,65,30,0,0,0,0,0
+Wilkins-Pierson Preserve ,Lawn,41.4.1,0,0,0,5,20,0,0,0,0,0
+Wilkins-Pierson Preserve ,Edge,31.1.1,60,15,5,15,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Edge,31.4.1,30,20,5,20,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Edge,32.2.1,50,45,0,5,5,0,0,0,1,0
+Wilkins-Pierson Preserve ,Edge,32.4.1,1,70,5,20,15,0,1,1,10,0
+Wilkins-Pierson Preserve ,Edge,40.1.1,30,15,15,20,5,1,1,0,0,0
+Wilkins-Pierson Preserve ,Edge,40.3.1,60,5,5,5,1,0,1,1,0,0
+Wilkins-Pierson Preserve ,Edge,41.1.1,30,40,0,20,5,0,1,1,1,0
+Wilkins-Pierson Preserve ,Edge,41.4.1,10,70,1,15,5,0,1,5,1,0
+Ingram,Center,31.1.1,1,1,10,60,1,0,1,1,0,0
+Ingram,Center,31.4.1,1,20,1,15,1,0,5,1,1,0
+Ingram,Center,32.2.1,0,75,1,20,25,0,1,1,5,0
+Ingram,Center,32.4.1,0,25,15,60,40,0,5,1,1,0
+Ingram,Center,40.1.1,5,30,1,20,1,0,1,1,0,0
+Ingram,Center,40.3.1,1,35,1,50,40,0,1,1,1,0
+Ingram,Center,41.1.1,0,20,5,30,60,0,1,1,1,0
+Ingram,Center,41.4.1,0,30,1,30,50,0,1,1,5,0
+Ingram,Edge,31.1.1,1,0,1,50,1,0,1,0,0,0
+Ingram,Edge,31.4.1,1,5,1,50,1,0,1,1,0,0
+Ingram,Edge,32.2.1,0,15,5,65,25,0,5,5,1,0
+Ingram,Edge, 32.4.1,0,35,1,35,85,0,0,0,1,0
+Ingram,Edge,40.1.1,0,1,5,95,30,0,1,1,1,0
+Ingram,Edge,40.3.1,0,15,10,40,40,0,1,0,1,0
+Ingram,Edge,41.1.1,0,15,1,10,85,0,1,0,1,0
+Ingram,Edge,41.4.1,1,70,1,30,30,0,1,0,1,0
+Ingram,Lawn,31.1.1,5,1,0,10,0,0,1,1,0,0
+Ingram,Lawn,31.4.1,5,5,10,5,0,0,0,0,0,0
+Ingram,Lawn,32.2.1,1,1,0,10,0,0,0,0,0,0
+Ingram,Lawn,32.4.1,5,1,5,15,0,0,0,0,0,0
+Ingram,Lawn,40.1.1,20,10,5,20,0,0,0,0,0,0
+Ingram,Lawn,40.3.1,20,10,30,20,0,0,0,0,0,0
+Ingram,Lawn,41.1.1,20,30,10,10,0,0,0,0,0,0
+Ingram,Lawn,41.4.1,10,1,1,5,0,0,0,0,0,0
+Lucille,Center,31.1.1,1,15,1,75,15,0,1,5,10,0
+Lucille,Center,31.4.1,10,60,1,10,1,0,0,0,1,0
+Lucille,Center,32.2.1,20,10,5,20,1,0,1,1,0,0
+Lucille,Center,32.4.1,20,10,5,15,5,0,1,1,0,0
+Lucille,Center,40.1.1,1,5,1,30,60,0,1,1,1,0
+Lucille,Center,40.4.1,50,15,1,5,1,0,0,1,1,0
+Lucille,Center,41.1.1,30,20,1,10,1,0,1,1,0,0
+Lucille,Center,41.4.1,20,50,5,10,1,0,1,1,1,0
+Lucille,Edge,31.1.1,5,60,1,15,5,10,1,5,1,0
+Lucille,Edge,31.4.1,90,10,0,1,1,0,0,1,1,0
+Lucille,Edge,32.2.1,75,5,0,10,1,0,0,0,0,0
+Lucille,Edge,32.4.1,10,20,1,1,1,0,1,5,1,0
+Lucille,Edge,40.1.1,30,0,1,10,0,0,0,5,0,0
+Lucille,Edge,40.3.1,15,1,1,10,1,0,0,5,0,0
+Lucille,Edge,41.1.1,95,1,0,1,5,0,0,1,0,0
+Lucille,Edge,41.4.1,75,10,1,1,5,0,0,1,1,0
+Lucille,Lawn,31.1.1,95,1,0,1,1,0,0,1,1,0
+Lucille,Lawn,31.4.1,90,1,1,5,1,0,0,1,1,0
+Lucille,Lawn,32.2.1,60,20,0,15,5,0,0,1,1,0
+Lucille,Lawn,32.4.1,85,1,0,5,5,0,0,0,0,0
+Lucille,Lawn,40.1.1,50,20,5,5,1,0,1,1,0,0
+Lucille,Lawn,40.3.1,1,0,0,20,0,0,0,0,0,0
+Lucille,Lawn,41.1.1,95,1,0,5,1,0,0,0,0,0
+Lucille,Lawn,41.4.1,25,0,0,5,15,0,0,1,1,0
+Rock Pit #39,Center,31.1.1,1,1,5,70,1,0,1,5,0,0
+Rock Pit #39,Center,31.4.1,10,0,1,70,1,0,1,1,0,0
+Rock Pit #39,Center,32.2.1,0,0,1,85,20,0,1,1,0,0
+Rock Pit #39,Center,32.4.1,1,10,5,80,1,0,1,1,1,0
+Rock Pit #39,Center,40.1.1,1,10,5,70,1,0,5,1,0,0
+Rock Pit #39,Center,40.3.1,5,5,1,80,1,0,5,1,0,0
+Rock Pit #39,Center,41.1.1,1,1,5,90,10,0,1,1,0,0
+Rock Pit #39,Center,41.4.1,1,0,5,80,10,0,1,1,0,0
+Rock Pit #39,Edge,31.1.1,1,0,1,95,5,0,0,0,0,0
+Rock Pit #39,Edge,31.4.1,1,0,5,40,25,0,1,1,0,0
+Rock Pit #39,Edge,32.2.1,0,10,1,85,5,0,1,1,0,0
+Rock Pit #39,Edge,32.4.1,0,0,1,100,5,0,1,0,0,0
+Rock Pit #39,Edge,40.1.1,0,1,80,20,0,0,0,0,0,0
+Rock Pit #39,Edge,40.3.1,5,5,5,70,10,0,0,0,0,0
+Rock Pit #39,Edge,41.1.1,1,1,5,80,1,0,1,1,0,0
+Rock Pit #39,Edge,41.4.1,1,5,1,90,1,0,1,1,0,0
+West Biscayne,Center,31.1.1,1,1,5,90,5,0,0,0,0,0
+West Biscayne,Center,31.4.1,1,1,5,70,1,0,5,1,0,0
+West Biscayne,Center,32.2.1,0,1,1,95,5,0,1,0,0,0
+West Biscayne,Center,32.4.1,0,5,5,85,20,0,0,1,0,0
+West Biscayne,Center,40.1.1,1,0,1,90,1,0,1,0,0,0
+West Biscayne,Center,40.3.1,5,5,1,10,15,0,1,0,1,0
+West Biscayne,Center,41.1.1,0,1,95,25,0,1,0,0,0,0
+West Biscayne,Center,41.4.1,,1,45,1,30,10,0,0,0,0
+West Biscayne,Edge,31.1.1,0,1,1,95,10,0,1,1,0,0
+West Biscayne,Edge,31.4.1,0,1,5,95,50,0,1,0,0,0
+West Biscayne,Edge,32.2.1,1,0,1,95,20,0,1,0,0,0
+West Biscayne,Edge,32.4.1,0,1,1,85,50,0,0,0,0,0
+West Biscayne,Edge,40.1.1,1,0,5,70,1,0,5,1,0,0
+West Biscayne,Edge,40.3.1,1,0,5,50,5,0,5,1,0,0
+West Biscayne,Edge,41.1.1,0,1,1,95,10,0,5,1,0,0
+West Biscayne,Edge,41.4.1,1,1,1,70,35,0,0,1,1,0
+West Biscayne,Lawn,31.1.1,10,20,15,60,1,0,1,1,0,0
+West Biscayne,Lawn,31.4.1,1,1,5,60,1,0,1,0,0,0
+West Biscayne,Lawn,32.2.1,5,0,0,20,0,0,0,0,0,0
+West Biscayne,Lawn,32.4.1,5,0,0,5,0,0,0,0,0,0
+West Biscayne,Lawn,40.1.1,5,45,1,50,0,0,10,1,1,0
+West Biscayne,Lawn,40.3.1,1,35,10,40,10,0,1,5,5,0
+West Biscayne,Lawn,41.1.1,1,20,5,30,1,0,1,5,0,0
+West Biscayne,Lawn,41.4.1,5,0,0,5,0,0,0,0,0,0
