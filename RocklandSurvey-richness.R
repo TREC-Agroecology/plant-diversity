@@ -10,11 +10,11 @@ library(agricolae)
 
 data_files <- str_subset(list.files("data/"), "_NEON")
 for (file in data_files) {
-  site_data <- read_csv(paste0("data/", file))
+  Site_data <- read_csv(paste0("data/", file))
   if (exists("surveys")){
-    surveys <- bind_rows(surveys, site_data)
+    surveys <- bind_rows(surveys, Site_data)
   } else {
-    surveys <- site_data
+    surveys <- Site_data
   }
 }
 
@@ -27,6 +27,8 @@ invasive <- read_csv("data/TRECinvasive.csv") %>%
          GenusSpecies = paste(tolower(str_extract(genus, "...")),
                                tolower(str_trunc(species, 3, "right", "")), 
                                sep=""))
+location_colors <-c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c",
+                    "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99")
 
 surveys_w_plot <- surveys %>%
   filter(!str_detect(GenusSpecies, "unknown.")) %>%
@@ -54,15 +56,15 @@ big_plots <- surveys_w_plots %>%  ## Big_plots = 100m
   distinct(GenusSpecies) %>%
   summarize(hundreds = n())
 
-big_plots <- mutate(big_plots, site_stat = paste(Location, Site, sep=""))
+big_plots <- mutate(big_plots, Site_stat = paste(Location, Site, sep=""))
 
-sites <- surveys_w_plots %>%
+Sites <- surveys_w_plots %>%
   group_by(Location, Site) %>%
   distinct(GenusSpecies) %>%
   summarize(richness = n())
 
-blocks <- surveys_w_plots %>%
-  group_by(block) %>%
+Locations <- surveys_w_plots %>%
+  group_by(Location) %>%
   distinct(GenusSpecies) %>%
   summarize(richness = n())
 
@@ -72,117 +74,81 @@ blocks <- surveys_w_plots %>%
 record_counts <- ones %>% 
   right_join(tens) %>% 
   inner_join(big_plots) %>% 
-  mutate(site_stat = paste(block, site, sep="")) %>% 
-  left_join(cluster)
+  mutate(Site_stat = paste(Location, Site, sep=""))
 
-record_counts_sites <- ones %>% 
+record_counts_Sites <- ones %>% 
   right_join(tens) %>% 
   inner_join(big_plots) %>% 
-  mutate(site_stat = paste(block, site, sep="")) %>% 
-  left_join(pub_sites)
+  mutate(Site_stat = paste(Location, Site, sep=""))
 
 
-## Calculate and visualize richness among scales [[TREC ONLY]]
+## Calculate and visualize richness among scales
 
-ggplot(tens, aes(x=tens, fill=site)) +  # tens visualization
+length(unique(surveys_w_plots$GenusSpecies))
+
+ggplot(tens, aes(x=tens, fill=Site)) +  # tens visualization
   geom_histogram(binwidth = 5) +
-  facet_grid(.~block) +
+  facet_wrap(vars(Location)) +
   labs(x="Richness", y="Count", fill="Site") +
   theme_bw(base_size=24, base_family="Helvetica")
-ggsave("output/richness_ten.png", width = 12, height = 5)  
+ggsave("output/rockland_richness_ten.png", width = 12, height = 5)  
 
-site_avg <- record_counts %>%
-  group_by(block, site, cluster) %>%
+Site_avg <- record_counts %>%
+  group_by(Location, Site) %>%
   summarize(avg_ones = round(mean(ones, na.rm=TRUE), 0), sd_ones = round(sd(ones), 2),
             avg_tens = round(mean(tens), 0), sd_tens = round(sd(tens), 2),
             avg_hund = round(mean(hundreds), 0), sd_hund = round(sd(hundreds), 2))
 
-site_avg_plot <- record_counts %>%
-  group_by(status, cluster) %>%
+Site_avg_plot <- record_counts %>%
+  group_by(Site, Location) %>%
   summarize("1" = round(mean(ones, na.rm=TRUE), 0),
             "10" = round(mean(tens), 0),
             "100" = round(mean(hundreds), 0)) %>% 
-  gather(scale, average, "1":"100")  %>% 
-  mutate(cluster = factor(cluster, levels=c("open", "lawn", "orchard", 
-                                            "hammock", "flatwood")))
+  gather(scale, average, "1":"100")
 
-ggplot(site_avg_plot, aes(x=scale, y=average, group=cluster)) +
-  geom_line() +
-  geom_point(size=3, alpha = 0.8,  aes(shape=status, color=as.factor(cluster))) +
-  labs(x="Scale [m2]", y="Average Richness", shape="Soil Disturbance", color="Habitat") +
+ggplot(Site_avg_plot, aes(x=scale, y=average)) +
+  geom_jitter(size=3, alpha = 0.8,  aes(shape=Site, color=Location)) +
+  labs(x="Scale [m2]", y="Average Richness", shape="Site", color="Location") +
   theme_classic(base_size=14, base_family="Helvetica") +
-  scale_colour_manual(values=c("#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00"))
-ggsave("output/avg_richness.png", width = 5, height = 4)  
+  scale_colour_manual(values=location_colors)
+ggsave("output/rockland_avg_richness.png", width = 7.5, height = 6)  
 
 ## ANOVA and Tukey Post Hoc
 
-sink("output/richness.txt")
+sink("output/rockland_richness.txt")
 
-hundreds_aov <- aov(hundreds ~ block + site_stat, data=big_plots)
-cat("hundreds ~ block + site_stat\n") 
-print(summary(hundreds_aov))
-cat("\nblock\n")
-HSD.test(hundreds_aov, "block")$groups
-cat("\nsite\n")
-HSD.test(hundreds_aov, "site_stat")$groups
+hundreds_aov <- aov(hundreds ~ Location + Site + Location*Site, data=big_plots)
+cat("hundreds ~ Location + Site + L*S\n") 
+summary(hundreds_aov)
+cat("\nLocation\n")
+HSD.test(hundreds_aov, "Location")$groups
+cat("\nSite\n")
+HSD.test(hundreds_aov, "Site")$groups
 
-tens_aov <- aov(tens ~ block + site_stat, data=record_counts)
-cat("\ntens ~ block + site_stat\n") 
-print(summary(tens_aov))
-cat("\nblock\n")
-HSD.test(tens_aov, "block")$groups
-cat("\nsite\n")
-HSD.test(tens_aov, "site_stat")$groups
+tens_aov <- aov(tens ~ Location + Site + Location*Site, data=record_counts)
+cat("\ntens ~ Location + Site + L*S\n") 
+summary(tens_aov)
+cat("\nLocation\n")
+HSD.test(tens_aov, "Location")$groups
+cat("\nSite\n")
+HSD.test(tens_aov, "Site")$groups
 
-ones_aov <- aov(ones ~ block + site_stat, data=record_counts)
-cat("\nones ~ block + site_stat\n") 
+ones_aov <- aov(ones ~ Location + Site + Location*Site, data=record_counts)
+cat("\nones ~ Location + Site + L*S\n") 
 summary(ones_aov)
-cat("\nblock\n")
-HSD.test(ones_aov, "block")$groups
-cat("\nsite\n")
-HSD.test(ones_aov, "site_stat")$groups
+cat("\nLocation\n")
+HSD.test(ones_aov, "Location")$groups
+cat("\nSite\n")
+HSD.test(ones_aov, "Site")$groups
 
 sink()
 
-big_plots_cluster <- left_join(big_plots, cluster)
-record_counts_cluster <- left_join(record_counts, cluster)
-
-sink("output/richness_cluster.txt")
-
-hundreds_aov <- aov(hundreds ~ cluster, data=big_plots_cluster)
-cat("hundreds ~ cluster\n") 
-print(summary(hundreds_aov))
-HSD.test(hundreds_aov, "cluster")$groups
-hundreds_aov <- aov(hundreds ~ status, data=big_plots_cluster)
-cat("\nhundreds ~ status\n") 
-print(summary(hundreds_aov))
-HSD.test(hundreds_aov, "status")$groups
-
-tens_aov <- aov(tens ~ cluster, data=record_counts_cluster)
-cat("\ntens ~ cluster\n") 
-print(summary(tens_aov))
-HSD.test(tens_aov, "cluster")$groups
-tens_aov <- aov(tens ~ status, data=record_counts_cluster)
-cat("\ntens ~ status\n") 
-print(summary(tens_aov))
-HSD.test(tens_aov, "status")$groups
-
-ones_aov <- aov(ones ~ cluster, data=record_counts_cluster)
-cat("\nones ~ cluster\n") 
-summary(ones_aov)
-HSD.test(ones_aov, "cluster")$groups
-ones_aov <- aov(ones ~ status, data=record_counts_cluster)
-cat("\nones ~ status\n") 
-summary(ones_aov)
-HSD.test(ones_aov, "status")$groups
-
-sink()
 
 ## Status Counts
 
-block_status <- surveys_w_plots %>%
-  left_join(cluster) %>% 
-  group_by(cluster, block, site) %>%
+Location_status <- surveys_w_plots %>%
+  group_by(Location, Site) %>%
+  mutate(GenusSpecies = str_remove(GenusSpecies, ".\\.")) %>% 
   distinct(GenusSpecies) %>% 
   left_join(status) %>% 
   left_join(invasive) %>% 
@@ -190,30 +156,28 @@ block_status <- surveys_w_plots %>%
             established = sum(established_FL, na.rm=TRUE) - sum(native, na.rm=TRUE),
             invasive = sum(invasive, na.rm=TRUE))
 
-cluster_status <- block_status %>% 
-  group_by(cluster) %>% 
-  summarize(avg_richness = mean(richness),
-            avg_natives = mean(natives),
-            avg_established = mean(established),
-            avg_invasive = mean(invasive))
 
 
+## Species Area Curves
 
-## Species Area Curves [[TREC ONLY]]
+sink("output/rockland_species_area.txt")
 
-richness_results <- record_counts %>% 
-  ungroup() %>% 
-  select(cluster, "1" = ones, "10" = tens, "100" = hundreds) %>%
-  filter(!is.na(cluster)) %>% 
-  gather(scale, richness, "1":"100")
-
-sink("output/species_area.txt")
-print(paste("habitat", "r2", "slope","intercept"))
-for (habitat in unique(cluster$cluster)) {
-  habitat_results <- filter(richness_results, cluster == habitat)
-  test <- lm(log10(richness) ~ log10(as.numeric(scale)), data=habitat_results)
-  print(paste(habitat, round(summary(test)$r.squared, 3), 
+print(paste("--location", "r2", "slope","intercept"))
+for (location in unique(Site_avg_plot$Location)) {
+  location_results <- filter(Site_avg_plot, Location == location)
+  test <- lm(log10(average) ~ log10(as.numeric(scale)), data=location_results)
+  print(paste(location, round(summary(test)$r.squared, 3), 
               round(summary(test)$coeff[2,1], 3),
               round(summary(test)$coeff[1,1], 3)))
 }
+
+print(paste("--site", "r2", "slope","intercept"))
+for (site in unique(Site_avg_plot$Site)) {
+  site_results <- filter(Site_avg_plot, Site == site)
+  test <- lm(log10(average) ~ log10(as.numeric(scale)), data=site_results)
+  print(paste(site, round(summary(test)$r.squared, 3), 
+              round(summary(test)$coeff[2,1], 3),
+              round(summary(test)$coeff[1,1], 3)))
+}
+
 sink()
