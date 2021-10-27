@@ -56,6 +56,7 @@ cluster <- data.frame(block = c(1, 1, 4, 4, 14, 14, 15, 15),
                                  "high", "low", "low", "low"),
                       cluster = c("open", "open", "lawn", "open",
                                   "open", "hammock", "orchard", "orchard"))
+
 plots_tens <- distinct(tens, big_plot, corner) %>%
   mutate(site_code = paste(block, site, sep = "")) %>%
   left_join(cluster, by = c("block", "site"))
@@ -64,7 +65,7 @@ plots_hundreds <- distinct(surveys_w_plots, block, site, big_plot) %>%
   left_join(cluster, by = c("block", "site"))
 plots_site <- distinct(surveys_w_plots, block, site)
 
-plots_tens_mixed <- read_csv("data/plots_tens_mixed.csv") # mixed habitat classificiation
+plots_tens_mixed <- read_csv("data/plots_tens_mixed.csv") # mixed habitat classification
 
 ## Species List
 
@@ -153,9 +154,11 @@ nmds_plots_10 <- metaMDS(dist_plots_10, k=2, try=100, trace=TRUE)
 stressplot(nmds_plots_10)
 
 nmds_plots_scores_10 <- plots_tens_mixed %>%
-  bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2])
+  bind_cols(NMDS1 = scores(nmds_plots_10)[,1], NMDS2 = scores(nmds_plots_10)[,2]) %>% 
+  mutate(cluster = factor(cluster, levels=c("open", "lawn", "orchard", 
+                                            "hammock")))
 
-ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=status, color=as.factor(cluster))) +
+ggplot(nmds_plots_scores_10, aes(x=NMDS1, y=NMDS2, shape=status, color=cluster)) +
   #label = paste(big_plot,corner))) +
   geom_point(cex=5) +
   #geom_text(color="black") +
@@ -180,7 +183,9 @@ dist_plots_100 <- vegdist(matrix_hundred, "bray")
 nmds_plots_100 <- metaMDS(dist_plots_100, k=2, try=100, trace=TRUE)
 
 nmds_plots_scores_100 <- plots_hundreds %>%
-  bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2])
+  bind_cols(NMDS1 = scores(nmds_plots_100)[,1], NMDS2 = scores(nmds_plots_100)[,2]) %>% 
+  mutate(cluster = factor(cluster, levels=c("open", "lawn", "orchard", 
+                                            "hammock")))
 
 ggplot(nmds_plots_scores_100, aes(x=NMDS1, y=NMDS2, shape=status, color=as.factor(cluster))) +
   #label = big_plot)) +
